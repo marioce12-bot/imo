@@ -63,9 +63,8 @@ export default function ExplorerPage() {
       <div className="platform-page-content">
       <header className="platform-header">
         <div className="wrap platform-header-inner">
-          <Link href="/" aria-label="Retour à l'accueil"><Image src="/icimo-logo.png" alt="ICIMO" width={112} height={41} priority /></Link>
           <div className="platform-header-copy"><span className="eyebrow">Explorer ICIMO</span><strong>Les logements qui vous ressemblent.</strong></div>
-          <div className="platform-actions"><Link className="text-button" href="/auth?mode=login">Se connecter</Link><Link className="btn btn-sun" href="/auth?mode=signup">Créer un compte</Link></div>
+          <div className="platform-actions"><Link className="text-button" href="/dashboard/notifications">Notifications</Link><Link className="btn btn-ink" href="/dashboard/profile">Mon profil</Link></div>
         </div>
       </header>
 
