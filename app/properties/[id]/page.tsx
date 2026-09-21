@@ -13,5 +13,37 @@ const properties = [
 export default function PropertyDetailPage() {
   const params = useParams<{ id: string }>();
   const property = properties.find((item) => item.id === params.id) || properties[0];
-  return <main className="property-detail-page"><header className="property-detail-header"><Link href="/explorer" className="back-link">← Retour aux logements</Link><Image src="/icimo-logo.png" alt="ICIMO" width={100} height={37} /></header><div className="property-detail-wrap"><div className="detail-gallery"><div className="gallery-main"><Image src={property.images[0]} alt={property.title} fill priority sizes="(max-width: 800px) 100vw, 65vw" /></div><div className="gallery-side"><Image src={property.images[1]} alt="Intérieur du logement" fill sizes="(max-width: 800px) 50vw, 25vw" /><Image src={property.images[2]} alt="Détail du logement" fill sizes="(max-width: 800px) 50vw, 25vw" /></div></div><div className="property-detail-grid"><article className="property-detail-copy"><div className="detail-eyebrow"><span>{property.city} · {property.neighborhood}</span>{property.verified && <b>✓ Propriétaire vérifié</b>}</div><h1>{property.title}</h1><p className="detail-rating">★ {property.rating} · Logement très apprécié · {property.type}</p><div className="detail-facts"><span><strong>{property.guests}</strong> voyageurs</span><span><strong>{property.bedrooms}</strong> chambre{property.bedrooms > 1 ? "s" : ""}</span><span><strong>{property.bathrooms}</strong> salle{property.bathrooms > 1 ? "s" : ""} de bain</span></div><hr /><h2>À propos de ce logement</h2><p>Profitez d’un espace confortable et soigneusement préparé dans un quartier vivant. La localisation, les équipements et l’accueil du propriétaire ont été pensés pour un séjour simple et agréable.</p><div className="amenity-list"><span>✓ Wi-Fi haut débit</span><span>✓ Climatisation</span><span>✓ Cuisine équipée</span><span>✓ Parking privé</span></div><hr /><div className="owner-profile"><Image src={property.ownerImage} alt={property.owner} width={54} height={54} /><div><strong>Proposé par {property.owner}</strong><span>Répond généralement en moins d'une heure</span></div></div></article><aside className="booking-box"><div className="booking-price"><strong>{property.price} FCFA</strong><span>/ nuit</span></div><label>Arrivée<input type="date" /></label><label>Départ<input type="date" /></label><label>Voyageurs<select defaultValue="2"><option value="1">1 voyageur</option><option value="2">2 voyageurs</option><option value="4">4 voyageurs</option><option value="6">6 voyageurs</option></select></label><Link className="btn btn-ink" href="/auth?mode=signup">Réserver ce logement</Link><Link className="detail-contact-link" href="/auth?mode=login">Contacter le propriétaire</Link><small>Vous pourrez confirmer les détails avant tout paiement.</small></aside></div></div></main>;
+
+  return (
+    <main className="property-detail-page">
+      <header className="property-detail-header">
+        <Link href="/explorer" className="back-link">← <span>Retour aux logements</span></Link>
+        <Image src="/icimo-logo.png" alt="ICIMO" width={100} height={37} priority />
+        <Link className="detail-header-action" href="/auth?mode=login">Se connecter</Link>
+      </header>
+
+      <div className="property-detail-wrap">
+        <div className="detail-breadcrumb">Explorer <span>/</span> {property.city} <span>/</span> {property.type}</div>
+        <section className="detail-gallery" aria-label="Photos du logement">
+          <div className="gallery-main"><Image src={property.images[0]} alt={property.title} fill priority sizes="(max-width: 800px) 100vw, 66vw" /></div>
+          <div className="gallery-side"><div><Image src={property.images[1]} alt="Intérieur du logement" fill sizes="(max-width: 800px) 50vw, 33vw" /></div><div><Image src={property.images[2]} alt="Détail du logement" fill sizes="(max-width: 800px) 50vw, 33vw" /><span className="gallery-count">3 photos</span></div></div>
+        </section>
+
+        <div className="property-detail-grid">
+          <article className="property-detail-copy">
+            <div className="detail-eyebrow"><span>{property.city} · {property.neighborhood}</span>{property.verified && <b>✓ Propriétaire vérifié</b>}</div>
+            <h1>{property.title}</h1>
+            <p className="detail-rating">★ {property.rating} <span>·</span> Logement très apprécié <span>·</span> {property.type}</p>
+            <div className="detail-facts"><span><strong>{property.guests}</strong> voyageurs</span><span><strong>{property.bedrooms}</strong> chambre{property.bedrooms > 1 ? "s" : ""}</span><span><strong>{property.bathrooms}</strong> salle{property.bathrooms > 1 ? "s" : ""} de bain</span></div>
+            <hr />
+            <section><h2>À propos de ce logement</h2><p>Profitez d’un espace confortable et soigneusement préparé dans un quartier vivant. La localisation, les équipements et l’accueil du propriétaire ont été pensés pour un séjour simple et agréable.</p></section>
+            <section className="detail-section"><h2>Ce que propose ce logement</h2><div className="amenity-list"><span>✓ Wi-Fi haut débit</span><span>✓ Climatisation</span><span>✓ Cuisine équipée</span><span>✓ Parking privé</span></div></section>
+            <section className="detail-section owner-section-detail"><h2>Votre hôte</h2><div className="owner-profile"><Image src={property.ownerImage} alt={property.owner} width={54} height={54} /><div><strong>{property.owner}</strong><span>Répond généralement en moins d'une heure</span></div></div></section>
+          </article>
+
+          <aside className="booking-box"><div className="booking-box-top"><div><strong>{property.price} FCFA</strong><span> / nuit</span></div><small>★ {property.rating}</small></div><div className="booking-fields"><label>Arrivée<input type="date" /></label><label>Départ<input type="date" /></label></div><label>Voyageurs<select defaultValue="2"><option value="1">1 voyageur</option><option value="2">2 voyageurs</option><option value="4">4 voyageurs</option><option value="6">6 voyageurs</option></select></label><Link className="btn btn-ink" href="/auth?mode=signup">Réserver ce logement</Link><Link className="detail-contact-link" href="/auth?mode=login">Contacter le propriétaire</Link><small className="booking-note">Vous pourrez confirmer les détails avant tout paiement.</small></aside>
+        </div>
+      </div>
+    </main>
+  );
 }
