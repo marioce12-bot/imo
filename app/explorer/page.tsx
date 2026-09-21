@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import PlatformNav from "@/components/PlatformNav";
 
 type Property = {
   id: number;
@@ -58,6 +59,8 @@ export default function ExplorerPage() {
 
   return (
     <main className="platform-shell">
+      <PlatformNav />
+      <div className="platform-page-content">
       <header className="platform-header">
         <div className="wrap platform-header-inner">
           <Link href="/" aria-label="Retour à l'accueil"><Image src="/icimo-logo.png" alt="ICIMO" width={112} height={41} priority /></Link>
@@ -89,6 +92,7 @@ export default function ExplorerPage() {
       </div>
 
       {authAction && null}
+      </div>
     </main>
   );
 }

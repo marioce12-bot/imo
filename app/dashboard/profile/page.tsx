@@ -1,0 +1,1 @@
+export default function ProfilePage() { return <section className="dashboard-placeholder"><p className="eyebrow">Mon compte</p><h1>Mon profil</h1><p>Gérez vos informations personnelles, vos préférences et votre mode propriétaire.</p></section>; }

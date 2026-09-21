@@ -1,0 +1,2 @@
+import Link from "next/link";
+export default function OwnerPage() { return <section className="dashboard-placeholder"><p className="eyebrow">Espace propriétaire</p><h1>Votre espace propriétaire</h1><p>Publiez vos logements, gérez vos disponibilités et suivez vos revenus.</p><div className="dashboard-actions"><Link className="btn btn-ink" href="/dashboard/owner/properties">Mes logements</Link><Link className="btn btn-sun" href="/dashboard/owner/calendar">Calendrier</Link><Link className="btn btn-sun" href="/dashboard/owner/revenue">Revenus</Link></div></section>; }

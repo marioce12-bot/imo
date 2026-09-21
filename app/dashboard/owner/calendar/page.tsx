@@ -1,0 +1,1 @@
+export default function OwnerCalendarPage() { return <section className="dashboard-placeholder"><p className="eyebrow">Espace propriétaire</p><h1>Calendrier</h1><p>Gérez les disponibilités et les dates réservées de vos logements.</p></section>; }

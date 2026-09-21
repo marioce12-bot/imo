@@ -1,0 +1,1 @@
+export default function OwnerPropertiesPage() { return <section className="dashboard-placeholder"><p className="eyebrow">Espace propriétaire</p><h1>Mes logements</h1><p>Ajoutez et gérez vos annonces immobilières.</p><button className="btn btn-ink" type="button">＋ Ajouter un logement</button></section>; }

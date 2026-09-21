@@ -1,0 +1,1 @@
+export default function OwnerRevenuePage() { return <section className="dashboard-placeholder"><p className="eyebrow">Espace propriétaire</p><h1>Revenus</h1><p>Suivez vos réservations, paiements et décaissements.</p></section>; }

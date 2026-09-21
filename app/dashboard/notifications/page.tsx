@@ -1,0 +1,1 @@
+export default function NotificationsPage() { return <section className="dashboard-placeholder"><p className="eyebrow">Mon activité</p><h1>Notifications</h1><p>Les confirmations, rappels et nouvelles demandes apparaîtront ici.</p></section>; }
