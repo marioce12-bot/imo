@@ -69,11 +69,6 @@ export default function ExplorerPage() {
       </header>
 
       <div className="wrap platform-content">
-        <section className="platform-intro">
-          <div><p className="eyebrow">Bénin · 6 logements sélectionnés</p><h1>Votre prochain chez-vous commence ici.</h1><p>Explorez librement les annonces. Créez un compte seulement au moment de contacter, réserver ou sauvegarder un logement.</p></div>
-          <div className="platform-tip"><span>✦</span><div><strong>Une location, deux façons</strong><p>Pour une nuit ou pour longtemps, trouvez le bon espace.</p></div></div>
-        </section>
-
         <section className="search-panel" aria-label="Filtres de recherche">
           <label className="search-main"><span>Destination ou quartier</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Ex. Cotonou, Fidjrossè..." /></label>
           <label><span>Type de logement</span><select value={type} onChange={(event) => setType(event.target.value)}><option>Tous les types</option><option>Appartement</option><option>Maison</option><option>Studio</option><option>Villa</option></select></label>
@@ -87,7 +82,6 @@ export default function ExplorerPage() {
         {view === "map" ? <section className="map-preview"><div className="map-grid" /><div className="map-label map-label-1">Cotonou <strong>28k</strong></div><div className="map-label map-label-2">Ouidah <strong>22k</strong></div><div className="map-label map-label-3">Porto-Novo <strong>18k</strong></div><p>Carte interactive disponible avec la localisation approximative des logements.</p></section> : <section className="property-grid" aria-label="Logements disponibles">{filteredProperties.map((property) => <article className="property-card" key={property.id}><div className="property-image"><Image src={property.imageUrl} alt={property.image} fill sizes="(max-width: 600px) 100vw, (max-width: 900px) 50vw, 33vw" className="property-photo" /><div className="property-image-shade" /><button className={`favorite ${favorites.includes(property.id) ? "is-favorite" : ""}`} type="button" onClick={() => requestAuth("Ajouter aux favoris", property.id)} aria-label={favorites.includes(property.id) ? "Retirer des favoris" : "Ajouter aux favoris"}>{favorites.includes(property.id) ? "♥" : "♡"}</button>{property.verified && <span className="verified-badge">✓ Vérifié</span>}</div><div className="property-body"><div className="property-location"><span>{property.city} · {property.neighborhood}</span><span>★ {property.rating}</span></div><h2>{property.title}</h2><div className="property-meta"><span>{property.bedrooms} chambre{property.bedrooms > 1 ? "s" : ""}</span><span>·</span><span>{property.guests} voyageurs</span><span>·</span><span>{property.type}</span></div><div className="property-footer"><strong>{property.price.toLocaleString("fr-FR")} FCFA <small>/ nuit</small></strong><button type="button" onClick={() => requestAuth("Réserver")}>Voir le logement <span>→</span></button></div><button className="contact-link" type="button" onClick={() => requestAuth("Contacter")}>Contacter le propriétaire</button></div></article>)}</section>}
 
         {filteredProperties.length === 0 && <div className="empty-state"><strong>Aucun logement ne correspond à votre recherche.</strong><button className="btn btn-ink" type="button" onClick={() => { setQuery(""); setType("Tous les types"); setMaxPrice("90000"); setGuests("Tous"); }}>Réinitialiser les filtres</button></div>}
-        <div className="visitor-note"><span>◉</span><p><strong>Vous visitez en mode libre.</strong> Toutes les annonces sont consultables sans compte. La connexion sera demandée juste avant votre première action.</p></div>
       </div>
 
       {authAction && null}
