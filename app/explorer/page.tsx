@@ -52,7 +52,8 @@ export default function ExplorerPage() {
       setFavorites((current) => current.includes(propertyId) ? current.filter((id) => id !== propertyId) : [...current, propertyId]);
       return;
     }
-    setAuthAction(action);
+    if (action === "Ajouter aux favoris") return;
+    window.location.assign(`/auth?mode=${action === "Réserver" ? "signup" : "login"}`);
   }
 
   return (
@@ -61,7 +62,7 @@ export default function ExplorerPage() {
         <div className="wrap platform-header-inner">
           <Link href="/" aria-label="Retour à l'accueil"><Image src="/icimo-logo.png" alt="ICIMO" width={112} height={41} priority /></Link>
           <div className="platform-header-copy"><span className="eyebrow">Explorer ICIMO</span><strong>Les logements qui vous ressemblent.</strong></div>
-          <div className="platform-actions"><button className="text-button" type="button" onClick={() => setAuthAction("Contacter")}>Se connecter</button><button className="btn btn-sun" type="button" onClick={() => setAuthAction("Réserver")}>Créer un compte</button></div>
+          <div className="platform-actions"><Link className="text-button" href="/auth?mode=login">Se connecter</Link><Link className="btn btn-sun" href="/auth?mode=signup">Créer un compte</Link></div>
         </div>
       </header>
 
@@ -87,7 +88,7 @@ export default function ExplorerPage() {
         <div className="visitor-note"><span>◉</span><p><strong>Vous visitez en mode libre.</strong> Toutes les annonces sont consultables sans compte. La connexion sera demandée juste avant votre première action.</p></div>
       </div>
 
-      {authAction && <div className="auth-overlay" role="presentation" onMouseDown={(event) => { if (event.currentTarget === event.target) setAuthAction(null); }}><section className="auth-modal" role="dialog" aria-modal="true" aria-labelledby="auth-title"><button className="modal-close" type="button" aria-label="Fermer" onClick={() => setAuthAction(null)}>×</button><div className="auth-mark">⌂</div><p className="eyebrow">Une petite étape</p><h2 id="auth-title">Connectez-vous pour {authAction.toLowerCase()}.</h2><p>ICIMO protège vos échanges et vos réservations. Connectez-vous ou créez gratuitement votre compte pour continuer.</p><button className="btn btn-ink modal-primary" type="button" onClick={() => setAuthAction(null)}>Continuer avec un compte</button><button className="modal-secondary" type="button" onClick={() => setAuthAction(null)}>J'ai déjà un compte</button><small>Connexion sécurisée · Aucun engagement</small></section></div>}
+      {authAction && null}
     </main>
   );
 }
