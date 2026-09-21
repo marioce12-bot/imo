@@ -25,8 +25,8 @@ export default function PlatformNav() {
     if (!hasSupabaseConfig) return;
     const supabase = createSupabaseBrowserClient();
     let mounted = true;
-    supabase.auth.getSession().then(({ data }) => {
-      if (mounted) setUser(data.session?.user ? { email: data.session.user.email, name: data.session.user.user_metadata?.full_name } : null);
+    supabase.auth.getUser().then(({ data }) => {
+      if (mounted) setUser(data.user ? { email: data.user.email, name: data.user.user_metadata?.full_name } : null);
     });
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!mounted) return;
@@ -45,7 +45,7 @@ export default function PlatformNav() {
   return <>
     <header className="platform-mobile-header">
       <Link href="/explorer" aria-label="ICIMO accueil"><Image src="/icimo-logo.png" alt="ICIMO" width={100} height={37} priority /></Link>
-      <Link className="mobile-header-profile" href={user ? "/dashboard/profile" : "/auth?mode=login"}>{user ? (user.name || user.email || "U").slice(0, 1).toUpperCase() : "Se connecter"}</Link>
+      {user ? <Link className="mobile-header-profile" href="/dashboard/profile">{(user.name || user.email || "U").slice(0, 1).toUpperCase()}</Link> : <span className="mobile-header-auth"><Link href="/auth?mode=login">Se connecter</Link><Link href="/auth?mode=signup">Créer un compte</Link></span>}
     </header>
     <aside className="platform-sidebar">
       <Link className="platform-brand" href="/explorer"><Image src="/icimo-logo.png" alt="ICIMO" width={112} height={41} priority /></Link>
