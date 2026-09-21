@@ -828,7 +828,7 @@ svg {
 .platform-actions { display: flex; align-items: center; gap: 1rem; }
 .text-button, .modal-secondary { border: 0; background: transparent; color: #24352e; font: inherit; font-weight: 700; cursor: pointer; }
 .platform-content { padding: clamp(2.5rem, 5vw, 5rem) 0 4rem; }
-.platform-intro { display: flex; justify-content: space-between; align-items: end; gap: 3rem; margin-bottom: 2.75rem; }
+.platform-intro { display: flex; justify-content: space-between; align-items: flex-end; gap: 3rem; margin-bottom: 2.75rem; }
 .platform-intro h1 { max-width: 14ch; margin: .65rem 0 1rem; color: #24352e; font-size: clamp(2.3rem, 5vw, 4.5rem); }
 .platform-intro p:not(.eyebrow) { max-width: 42rem; color: var(--muted); }
 .platform-tip { display: flex; align-items: center; gap: 1rem; max-width: 20rem; padding: 1.2rem; border: 1px solid #d9c8b2; border-radius: 20px; background: #ead8c3; }.platform-tip > span { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; border-radius: 50%; background: #b96f4e; color: #fff; }.platform-tip strong { color: #24352e; font-family: var(--font-display); }.platform-tip p { margin-top: .2rem; font-size: .85rem; }
