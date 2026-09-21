@@ -43,6 +43,10 @@ export default function PlatformNav() {
   }
 
   return <>
+    <header className="platform-mobile-header">
+      <Link href="/explorer" aria-label="ICIMO accueil"><Image src="/icimo-logo.png" alt="ICIMO" width={100} height={37} priority /></Link>
+      <Link className="mobile-header-profile" href={user ? "/dashboard/profile" : "/auth?mode=login"}>{user ? (user.name || user.email || "U").slice(0, 1).toUpperCase() : "Se connecter"}</Link>
+    </header>
     <aside className="platform-sidebar">
       <Link className="platform-brand" href="/explorer"><Image src="/icimo-logo.png" alt="ICIMO" width={112} height={41} priority /></Link>
       <p className="platform-nav-label">Découvrir</p>
