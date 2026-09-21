@@ -1,312 +1,41 @@
-import Link from "next/link";
 import Image from "next/image";
-import Logo from "@/components/Logo";
-import Skyline from "@/components/Skyline";
-import OwnerCalendar from "@/components/OwnerCalendar";
+import Link from "next/link";
 
-const villes = [
-  "Cotonou",
-  "Abomey-Calavi",
-  "Porto-Novo",
-  "Ouidah",
-  "Grand-Popo",
-  "Parakou",
-];
+const cities = ["Cotonou", "Porto-Novo", "Ouidah", "Abomey-Calavi"];
 
-const etapes = [
-  {
-    titre: "Cherchez",
-    texte:
-      "Choisissez une ville, des dates et le nombre de personnes. Filtrez par prix, équipements, nombre de chambres, et parcourez les résultats en liste ou sur la carte.",
-  },
-  {
-    titre: "Discutez avec le propriétaire",
-    texte:
-      "Posez vos questions par message, envoyez des photos ou des documents. Tout se passe dans l'application, sans échanger de numéro.",
-  },
-  {
-    titre: "Réservez",
-    texte:
-      "Pour un séjour court, choisissez vos dates : le prix total est calculé pour vous. Pour une location longue durée, envoyez une demande au propriétaire.",
-  },
-  {
-    titre: "Payez en ligne",
-    texte:
-      "Le paiement est sécurisé. Une fois validé, votre réservation est confirmée et les dates sont bloquées pour vous.",
-  },
-];
-
-const confiance = [
-  {
-    titre: "Propriétaires vérifiés",
-    texte:
-      "Les propriétaires peuvent faire vérifier leur profil. Un badge s'affiche sur leurs annonces.",
-  },
-  {
-    titre: "Prix clairs avant de payer",
-    texte:
-      "Vous voyez le prix total et les frais avant de confirmer. Pas de surprise au moment du paiement.",
-  },
-  {
-    titre: "Pas de double réservation",
-    texte:
-      "Les dates sont bloquées automatiquement dès que le paiement est confirmé.",
-  },
-  {
-    titre: "Des avis de vrais voyageurs",
-    texte:
-      "Seuls les voyageurs qui ont réservé peuvent laisser un avis, après leur séjour.",
-  },
-];
-
-const faq = [
-  {
-    q: "Dois-je créer un compte pour parcourir les logements ?",
-    r: "Non. Vous explorez les annonces librement. Un compte est demandé uniquement quand vous voulez contacter un propriétaire, réserver ou enregistrer un favori.",
-  },
-  {
-    q: "Comment fonctionne le paiement ?",
-    r: "Pour un séjour de courte durée, vous payez en ligne depuis l'application. La réservation est confirmée et les dates sont bloquées une fois le paiement validé. Pour une location longue durée, vous envoyez d'abord une demande au propriétaire.",
-  },
-  {
-    q: "Quels frais dois-je prévoir ?",
-    r: "Le prix total, frais compris, est affiché avant que vous payiez.",
-  },
-  {
-    q: "Puis-je être client et propriétaire avec le même compte ?",
-    r: "Oui. Un seul compte suffit : vous passez du mode client au mode propriétaire depuis votre profil.",
-  },
-  {
-    q: "Comment savoir si un propriétaire est fiable ?",
-    r: "Cherchez le badge « Propriétaire vérifié » sur l'annonce et lisez les avis laissés après les séjours. Vous pouvez aussi signaler une annonce à l'équipe ICIMO.",
-  },
-  {
-    q: "ICIMO est-il disponible en dehors du Bénin ?",
-    r: "ICIMO démarre au Bénin. L'extension vers d'autres pays africains est prévue, progressivement.",
-  },
+const highlights = [
+  ["01", "Une vraie adresse", "Des logements situés dans les quartiers que vous voulez vraiment vivre."],
+  ["02", "Un échange direct", "Posez vos questions au propriétaire, sans intermédiaire opaque."],
+  ["03", "Un prix lisible", "Le montant affiché reste clair avant votre réservation."],
 ];
 
 export default function Home() {
   return (
-    <>
-      <a className="skip" href="#contenu">
-        Aller au contenu
-      </a>
-
-      <header className="hero on-dark">
-        <nav className="nav" aria-label="Navigation principale">
-          <div className="wrap">
-            <Link className="logo" href="/" aria-label="ICIMO, accueil">
-              <Image src="/icimo-logo.png" alt="ICIMO" width={132} height={48} priority />
-            </Link>
-            <div className="nav-links">
-              <a href="#fonctionnement">Comment ça marche</a>
-              <a href="#durees">Courte ou longue durée</a>
-              <a href="#proprietaires">Propriétaires</a>
-              <a href="#faq">Questions</a>
-            </div>
-            <Link className="btn btn-sun" href="/explorer">
-              Explorer les logements
-            </Link>
-          </div>
-        </nav>
-
-        <div className="wrap hero-body" id="contenu">
-          <h1>
-            <span>Trouvez.</span>
-            <span>Réservez.</span>
-            <span>Installez-vous.</span>
-          </h1>
-          <p className="hero-lead">
-            ICIMO réunit la recherche, la discussion avec le propriétaire, la
-            réservation et le paiement dans une seule application. Courte ou
-            longue durée, au Bénin d&apos;abord.
-          </p>
-
-          <form className="search" action="/explorer" method="get">
-            <div className="field">
-              <label htmlFor="ville">Destination</label>
-              <input
-                id="ville"
-                name="ville"
-                list="villes"
-                placeholder="Cotonou, Porto-Novo…"
-                autoComplete="off"
-              />
-              <datalist id="villes">
-                {villes.map((v) => (
-                  <option key={v} value={v} />
-                ))}
-              </datalist>
-            </div>
-            <div className="field">
-              <label htmlFor="arrivee">Arrivée</label>
-              <input id="arrivee" name="arrivee" type="date" />
-            </div>
-            <div className="field">
-              <label htmlFor="depart">Départ</label>
-              <input id="depart" name="depart" type="date" />
-            </div>
-            <div className="field">
-              <label htmlFor="voyageurs">Voyageurs</label>
-              <select id="voyageurs" name="voyageurs" defaultValue="2">
-                {[1, 2, 3, 4, 5, 6].map((n) => (
-                  <option key={n} value={n}>
-                    {n} {n > 1 ? "personnes" : "personne"}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <button className="btn btn-sun" type="submit">
-              Rechercher
-            </button>
-          </form>
-
-          <p className="hero-note">
-            Aucun compte requis pour parcourir les logements.{" "}
-            <a href="#proprietaires">Vous êtes propriétaire ?</a>
-          </p>
-        </div>
-
-        <Skyline />
+    <main className="landing">
+      <div className="landing-orb landing-orb-one" />
+      <div className="landing-orb landing-orb-two" />
+      <header className="landing-nav wrap">
+        <Link className="landing-brand" href="/" aria-label="ICIMO accueil"><Image src="/icimo-logo.png" alt="ICIMO" width={112} height={41} priority /></Link>
+        <nav className="landing-links" aria-label="Navigation principale"><a href="#experience">L'expérience</a><a href="#proprietaires">Propriétaires</a><a href="#aide">Aide</a></nav>
+        <div className="landing-nav-actions"><Link className="landing-login" href="/explorer">Se connecter</Link><Link className="glass-button glass-button-strong" href="/explorer">Explorer</Link></div>
       </header>
 
-      <main>
-        <section className="section" id="fonctionnement">
-          <div className="wrap how">
-            <div className="how-intro">
-              <h2 className="h2">
-                De la recherche au paiement, sans quitter l&apos;application.
-              </h2>
-              <p>
-                Plus besoin de jongler entre les appels, les messages et les
-                virements. ICIMO garde chaque étape au même endroit.
-              </p>
-            </div>
-            <ol className="steps">
-              {etapes.map((e, i) => (
-                <li key={e.titre}>
-                  <span className="step-n" aria-hidden="true">
-                    {i + 1}
-                  </span>
-                  <div>
-                    <h3>{e.titre}</h3>
-                    <p>{e.texte}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
+      <section className="landing-hero wrap" id="contenu">
+        <div className="hero-copy"><p className="landing-kicker"><span /> La nouvelle façon d'habiter le Bénin</p><h1>Un lieu à vous.<br /><em>Une vie à vivre.</em></h1><p className="hero-description">ICIMO rassemble les logements qui ont une histoire, les propriétaires qui vous répondent et les séjours qui commencent simplement.</p><div className="hero-actions"><Link className="glass-button glass-button-warm" href="/explorer">Voir les logements <span>↗</span></Link><a className="hero-text-link" href="#experience">Découvrir ICIMO <span>↓</span></a></div><div className="hero-proof"><div className="proof-avatars"><span>AM</span><span>KO</span><span>YA</span></div><p><strong>Déjà adopté par des voyageurs curieux</strong><br /><span>Une plateforme pensée ici, pour vous.</span></p></div></div>
+        <div className="hero-visual"><div className="hero-photo-card"><Image src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=88" alt="Intérieur lumineux d'un logement ICIMO" fill priority sizes="(max-width: 800px) 92vw, 50vw" /><div className="photo-gradient" /><div className="photo-caption"><span className="live-dot" /> Disponible maintenant <strong>Cotonou</strong></div></div><div className="floating-glass floating-rating"><span>★</span><div><strong>4,9 / 5</strong><small>avis voyageurs</small></div></div><div className="floating-glass floating-place"><small>À découvrir</small><strong>Fidjrossè<br />Cotonou</strong><span>→</span></div><div className="hero-stamp">ICI<br /><span>MO</span></div></div>
+      </section>
 
-        <section className="section section-tight" id="durees">
-          <div className="wrap">
-            <h2 className="h2 center-h">Un séjour d&apos;une nuit ou un bail d&apos;un an.</h2>
-            <div className="duo">
-              <article className="panel panel-short">
-                <h3>Courte durée</h3>
-                <p>
-                  Appartements meublés pour un week-end, un déplacement
-                  professionnel ou des vacances.
-                </p>
-                <ul className="checks">
-                  <li>Choisissez vos dates, le prix se calcule tout seul</li>
-                  <li>Réservation confirmée dès que le paiement est validé</li>
-                  <li>Historique de vos réservations toujours à portée de main</li>
-                </ul>
-              </article>
-              <article className="panel panel-long">
-                <h3>Longue durée</h3>
-                <p>
-                  Pour s&apos;installer : vous échangez d&apos;abord avec le
-                  propriétaire, puis vous avancez ensemble.
-                </p>
-                <ul className="checks">
-                  <li>Envoyez une demande directement au propriétaire</li>
-                  <li>Discutez et partagez vos documents dans le chat</li>
-                  <li>Le contrat et les paiements suivent, à votre rythme</li>
-                </ul>
-              </article>
-            </div>
-          </div>
-        </section>
+      <section className="glass-search wrap" aria-label="Rechercher un logement"><div className="search-heading"><span className="search-icon">⌕</span><div><small>Je cherche un logement à</small><strong>Où allez-vous ?</strong></div></div><label><span>Arrivée</span><input type="date" /></label><label><span>Départ</span><input type="date" /></label><label><span>Voyageurs</span><select defaultValue="2"><option value="1">1 voyageur</option><option value="2">2 voyageurs</option><option value="3">3 voyageurs</option><option value="4">4 voyageurs</option></select></label><button type="button" onClick={() => window.location.href = "/explorer"}>Rechercher <span>↗</span></button></section>
 
-        <section className="section" id="confiance">
-          <div className="wrap">
-            <h2 className="h2">Louer en confiance.</h2>
-            <div className="trust">
-              {confiance.map((c) => (
-                <div className="trust-item" key={c.titre}>
-                  <h3>{c.titre}</h3>
-                  <p>{c.texte}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+      <section className="landing-section wrap" id="experience"><div className="section-intro"><p className="landing-kicker"><span /> L'expérience ICIMO</p><h2>Pas seulement<br /><em>un toit.</em></h2><p>Un bon logement change la manière dont on découvre une ville. Nous avons conçu ICIMO pour rendre cette rencontre plus humaine, plus simple, plus sûre.</p></div><div className="highlight-grid">{highlights.map(([number, title, text]) => <article className="highlight-card" key={number}><span>{number}</span><h3>{title}</h3><p>{text}</p><a href="/explorer" aria-label={`Découvrir ${title}`}>↗</a></article>)}</div></section>
 
-        <section className="section owners on-dark" id="proprietaires">
-          <div className="wrap owners-grid">
-            <div>
-              <h2 className="h2">Vous avez un logement ? Mettez-le en location.</h2>
-              <ul className="checks">
-                <li>Publiez votre annonce avec photos et vidéos</li>
-                <li>Ouvrez ou bloquez vos dates depuis un calendrier</li>
-                <li>Répondez à vos clients dans l&apos;application</li>
-                <li>Suivez vos réservations, vos revenus et vos versements</li>
-                <li>Demandez le badge « Propriétaire vérifié »</li>
-              </ul>
-              <p className="owners-note">
-                Le même compte sert pour louer et pour proposer : vous changez
-                de mode en un geste.
-              </p>
-              <Link className="btn btn-sun" href="/explorer?mode=proprietaire">
-                Devenir propriétaire
-              </Link>
-            </div>
-            <OwnerCalendar />
-          </div>
-        </section>
+      <section className="editorial-panel wrap"><div className="editorial-image"><Image src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=88" alt="Salon chaleureux d'une maison" fill sizes="(max-width: 800px) 92vw, 45vw" /><span>01 / 03</span></div><div className="editorial-copy"><p className="landing-kicker"><span /> À votre rythme</p><h2>Pour une nuit.<br /><em>Ou pour longtemps.</em></h2><p>Appartement meublé pour un déplacement, maison familiale pour s'installer, villa pour respirer. Sur ICIMO, la durée s'adapte à votre histoire.</p><div className="editorial-links"><Link href="/explorer?type=courte">Séjours courts <span>↗</span></Link><Link href="/explorer?type=longue">Locations longues <span>↗</span></Link></div></div></section>
 
-        <section className="section faq" id="faq">
-          <div className="wrap">
-            <h2 className="h2">Vos questions.</h2>
-            <div className="faq-list">
-              {faq.map((f) => (
-                <details key={f.q}>
-                  <summary>{f.q}</summary>
-                  <p>{f.r}</p>
-                </details>
-              ))}
-            </div>
-          </div>
-        </section>
+      <section className="owner-section wrap" id="proprietaires"><div className="owner-copy"><p className="landing-kicker"><span /> Vous avez un logement ?</p><h2>Faites-lui<br /><em>une place.</em></h2><p>Publiez une adresse qui compte pour vous. ICIMO vous aide à la présenter, la gérer et rencontrer les bonnes personnes.</p><Link className="glass-button glass-button-warm" href="/explorer?mode=proprietaire">Proposer mon logement <span>↗</span></Link></div><div className="owner-art"><div className="owner-art-card"><Image src="https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=900&q=88" alt="Maison avec terrasse" fill sizes="(max-width: 800px) 80vw, 35vw" /></div><div className="owner-note floating-glass"><strong>Votre espace.</strong><span>Votre rythme.</span></div></div></section>
 
-        <section className="section-cta">
-          <div className="wrap">
-            <div className="cta">
-              <h2>Découvrez les logements, sans créer de compte.</h2>
-              <p>
-                Parcourez les annonces à votre rythme. Vous vous inscrivez
-                seulement le jour où vous voulez contacter un propriétaire.
-              </p>
-              <Link className="btn btn-ink" href="/explorer">
-                Explorer les logements
-              </Link>
-            </div>
-          </div>
-        </section>
-      </main>
+      <section className="landing-final wrap" id="aide"><p className="landing-kicker"><span /> Commencez simplement</p><h2>Votre prochaine<br /><em>adresse est ici.</em></h2><Link className="glass-button glass-button-warm" href="/explorer">Explorer sans compte <span>↗</span></Link></section>
 
-      <footer className="footer">
-        <div className="wrap footer-row">
-          <Link className="logo logo-dark" href="/" aria-label="ICIMO, accueil">
-            <Image src="/icimo-logo.png" alt="ICIMO" width={132} height={48} />
-          </Link>
-          <p>ICIMO est une marque d&apos;ICE HOLDING. Lancement au Bénin.</p>
-          <p>© 2026 ICIMO</p>
-        </div>
-      </footer>
-    </>
+      <footer className="landing-footer wrap"><Link href="/"><Image src="/icimo-logo.png" alt="ICIMO" width={95} height={35} /></Link><span>Une marque ICE HOLDING · Bénin</span><span>© 2026 ICIMO</span></footer>
+    </main>
   );
 }
