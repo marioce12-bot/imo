@@ -3,6 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { createSupabaseBrowserClient } from "@/lib/supabase-browser";
 
 const properties = [
   { id: "1", title: "Appartement lumineux avec vue sur la marina", city: "Cotonou", neighborhood: "Fidjrossè", type: "Appartement", price: "28 000", rating: "4,9", guests: 4, bedrooms: 2, bathrooms: 2, verified: true, owner: "Koffi Hounkpatin", ownerImage: "https://i.pravatar.cc/120?img=12", images: ["https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1400&q=88", "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=900&q=88", "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=900&q=88"] },
@@ -13,13 +15,20 @@ const properties = [
 export default function PropertyDetailPage() {
   const params = useParams<{ id: string }>();
   const property = properties.find((item) => item.id === params.id) || properties[0];
+  const [authLoading, setAuthLoading] = useState(true);
+  const [user, setUser] = useState(false);
+
+  useEffect(() => {
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) { setAuthLoading(false); return; }
+    createSupabaseBrowserClient().auth.getUser().then(({ data }) => { setUser(Boolean(data.user)); setAuthLoading(false); });
+  }, []);
 
   return (
     <main className="property-detail-page">
       <header className="property-detail-header">
         <Link href="/explorer" className="back-link">← <span>Retour aux logements</span></Link>
         <Image src="/icimo-logo.png" alt="ICIMO" width={100} height={37} priority />
-        <Link className="detail-header-action" href="/auth?mode=login">Se connecter</Link>
+        {authLoading ? <span className="detail-header-placeholder" aria-hidden="true" /> : user ? <span className="detail-header-actions"><Link href="/dashboard/notifications" aria-label="Notifications">◌</Link><Link href="/dashboard/profile" aria-label="Mon profil">Profil</Link></span> : <Link className="detail-header-action" href="/auth?mode=login">Se connecter</Link>}
       </header>
 
       <div className="property-detail-wrap">

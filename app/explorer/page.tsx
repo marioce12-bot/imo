@@ -64,7 +64,7 @@ export default function ExplorerPage() {
       <header className="platform-header">
         <div className="wrap platform-header-inner">
           <div className="platform-header-copy"><span className="eyebrow">Explorer ICIMO</span><strong>Les logements qui vous ressemblent.</strong></div>
-          <div className="platform-actions"><Link className="text-button" href="/dashboard/notifications">Notifications</Link><Link className="btn btn-ink" href="/dashboard/profile">Mon profil</Link></div>
+          <div className="platform-actions" aria-hidden="true" />
         </div>
       </header>
 
