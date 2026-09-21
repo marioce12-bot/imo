@@ -45,14 +45,14 @@ export default function PlatformNav() {
   return <>
     <header className="platform-mobile-header">
       <Link href="/explorer" aria-label="ICIMO accueil"><Image src="/icimo-logo.png" alt="ICIMO" width={100} height={37} priority /></Link>
-      {user ? <Link className="mobile-header-profile" href="/dashboard/profile">{(user.name || user.email || "U").slice(0, 1).toUpperCase()}</Link> : <span className="mobile-header-auth"><Link href="/auth?mode=login">Se connecter</Link><Link href="/auth?mode=signup">Créer un compte</Link></span>}
+      {user ? <span className="mobile-header-user-actions"><Link className="mobile-header-notifications" href="/dashboard/notifications" aria-label="Notifications"><NavIcon name="bell" /></Link><Link className="mobile-header-profile" href="/dashboard/profile">{(user.name || user.email || "U").slice(0, 1).toUpperCase()}</Link></span> : <span className="mobile-header-auth"><Link href="/auth?mode=login">Se connecter</Link><Link href="/auth?mode=signup">Créer un compte</Link></span>}
     </header>
     <aside className="platform-sidebar">
       <Link className="platform-brand" href="/explorer"><Image src="/icimo-logo.png" alt="ICIMO" width={112} height={41} priority /></Link>
       <p className="platform-nav-label">Découvrir</p>
       <nav aria-label="Navigation principale">{mainLinks.map(([label, href, icon]) => <Link className={href === "/explorer" ? "is-active" : ""} href={href} key={href}><span><NavIcon name={icon} /></span>{label}</Link>)}</nav>
       <p className="platform-nav-label platform-nav-spacer">Mon activité</p>
-      <nav aria-label="Compte"><Link href="/dashboard/notifications"><span><NavIcon name="bell" /></span>Notifications</Link><Link href={user ? "/dashboard/profile" : "/auth?mode=login"}><span><NavIcon name="user" /></span>Mon profil</Link></nav>
+      <nav aria-label="Compte"><Link href="/dashboard/notifications"><span><NavIcon name="bell" /></span>Notifications</Link></nav>
       <div className="platform-sidebar-bottom"><Link className="owner-link" href="/dashboard/owner"><span>＋</span><div><strong>Vous êtes propriétaire ?</strong><small>Publier un logement</small></div></Link>{user ? <div className="nav-user"><span className="nav-avatar">{(user.name || user.email || "U").slice(0, 1).toUpperCase()}</span><div><strong>{user.name || "Mon compte"}</strong><small>{user.email}</small></div><button type="button" onClick={signOut} aria-label="Se déconnecter">↪</button></div> : <div className="nav-guest"><Link className="nav-signin" href="/auth?mode=login">Se connecter <span>→</span></Link><Link className="nav-signup" href="/auth?mode=signup">Créer un compte</Link></div>}</div>
     </aside>
     <nav className="platform-mobile-nav" aria-label="Navigation mobile">{mainLinks.slice(0, 4).map(([label, href, icon]) => <Link className={href === "/explorer" ? "is-active" : ""} href={href} key={href}><span><NavIcon name={icon} /></span>{label}</Link>)}<Link href={user ? "/dashboard/profile" : "/auth?mode=login"}><span><NavIcon name="user" /></span>Profil</Link></nav>
