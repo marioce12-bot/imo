@@ -831,6 +831,7 @@ svg {
 .auth-header img, .platform-brand img, .platform-mobile-header img { filter: none; }
 .mobile-header-auth { display: flex; align-items: center; gap: .7rem; }.mobile-header-auth a { color: #a05b3f; font-size: .68rem; font-weight: 800; text-decoration: none; }.mobile-header-auth a:last-child { padding: .55rem .7rem; border-radius: 999px; background: #2d5042; color: #fff; }
 .mobile-header-user-actions { display: flex; align-items: center; gap: .6rem; }.mobile-header-notifications { display: grid; place-items: center; width: 1.95rem; height: 1.95rem; border: 1px solid #ded8ce; border-radius: 50%; color: #a05b3f; }.mobile-header-notifications svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.7; }
+.mobile-header-auth-placeholder { display: block; width: 6.5rem; height: 1.95rem; }.nav-auth-placeholder { display: block; height: 3.2rem; }
 @media (max-width: 800px) {
   .platform-mobile-header { position: sticky; z-index: 12; top: 0; display: flex; align-items: center; justify-content: space-between; min-height: 3rem; padding: .3rem .8rem; border-bottom: 1px solid #ded8ce; background: rgba(251,250,247,.96); backdrop-filter: blur(16px); }
   .platform-mobile-header img { display: block; width: 76px; height: auto; }
