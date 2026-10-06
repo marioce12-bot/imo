@@ -72,6 +72,14 @@ export default function BrandShell({ children }: { children: ReactNode }) {
     setLocation("/auth/connexion");
   }
 
+  async function handleAdminExit() {
+    try {
+      await fetch("/api/admin/logout", { method: "POST", credentials: "same-origin" });
+    } finally {
+      setLocation("/");
+    }
+  }
+
   return (
     <div className={`app-frame ${admin ? "admin-frame" : ""}`}>
       <div className="demo-strip"><span className="demo-dot" /> Démonstration interactive <span className="demo-strip-note">· annonces et paiements fictifs</span></div>
@@ -103,19 +111,18 @@ export default function BrandShell({ children }: { children: ReactNode }) {
               <Link href="/profil">Mon profil</Link>
               <Link href="/notifications">Notifications</Link>
               <Link href="/parametres">Paramètres</Link>
-              <Link href="/admin">Console de démonstration</Link>
               <button onClick={() => void handleSignOut()}>{user ? "Se déconnecter" : "Connexion"}</button>
             </div>
           </details>
         </div>
       </header>
-      {admin && <div className="admin-mode-banner"><strong>ICIMO Ops</strong><span>Console d’administration · données fictives</span><button onClick={() => setLocation("/")}>Retour au site</button></div>}
+      {admin && <div className="admin-mode-banner"><strong>ICIMO Ops</strong><span>Console d’administration · données fictives</span><button onClick={() => void handleAdminExit()}>Quitter la console</button></div>}
       <main className="main-content">{children}</main>
       {!admin && (
         <footer className="site-footer">
           <div className="footer-brand"><Mark /><span>ICIMO</span><p>Le logement qui vous rapproche du Bénin, pour une nuit ou pour la durée.</p></div>
           <div className="footer-links"><span>Explorer</span><Link href="/recherche">Locations au Bénin</Link><Link href="/recherche?type=long">Longue durée</Link><Link href="/favoris">Mes favoris ({favorites.length})</Link></div>
-          <div className="footer-links"><span>Votre compte</span><Link href="/profil">Profil</Link><Link href="/hote">Espace propriétaire</Link><Link href="/admin">Console de démonstration</Link></div>
+          <div className="footer-links"><span>Votre compte</span><Link href="/profil">Profil</Link><Link href="/hote">Espace propriétaire</Link></div>
           <div className="footer-bottom">© 2026 ICIMO · Une marque ICE HOLDING <span>Les annonces et transactions affichées sont des exemples.</span></div>
         </footer>
       )}

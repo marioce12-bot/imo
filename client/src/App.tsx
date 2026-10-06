@@ -3,6 +3,7 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
+import AdminAccess from "@/components/AdminAccess";
 import { DemoProvider } from "@/components/DemoStore";
 import BrandShell from "@/components/BrandShell";
 import NotFound from "@/pages/NotFound";
@@ -31,6 +32,10 @@ const HostCalendarPage = lazy(() => import("@/pages/Host").then((module) => ({ d
 const HostRequestsPage = lazy(() => import("@/pages/Host").then((module) => ({ default: module.HostRequestsPage })));
 const HostRevenuePage = lazy(() => import("@/pages/Host").then((module) => ({ default: module.HostRevenuePage })));
 const HostVerificationPage = lazy(() => import("@/pages/Verification").then((module) => ({ default: module.default })));
+
+function ProtectedAdminPage() {
+  return <AdminAccess><AdminPage /></AdminAccess>;
+}
 
 function AppRoutes() {
   return (
@@ -61,7 +66,7 @@ function AppRoutes() {
         <Route path="/hote/demandes" component={HostRequestsPage} />
         <Route path="/hote/revenus" component={HostRevenuePage} />
         <Route path="/hote/verification" component={HostVerificationPage} />
-        <Route path="/admin" component={AdminPage} />
+        <Route path="/admin" component={ProtectedAdminPage} />
         <Route component={NotFound} />
       </Switch>
       </Suspense>

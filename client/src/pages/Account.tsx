@@ -283,7 +283,33 @@ export function ProfilePage() {
     };
     reader.readAsDataURL(file);
   }
-  return <section className="content-section page-section"><div className="breadcrumb"><Link href="/">Accueil</Link><span>/</span> Profil</div><div className="section-heading"><div><span className="eyebrow">VOTRE ESPACE</span><h1>Ravi de vous accueillir, {profile.firstName}.</h1><p>Compte unique de démonstration · client et propriétaire.</p></div></div><div className="profile-grid"><div className="profile-sidebar"><div className="profile-intro-card"><label className="avatar-photo-editor" aria-label="Modifier la photo du profil"><span className="avatar profile-avatar">{profile.avatar ? <img src={profile.avatar} alt="Photo de profil" /> : initials}</span><span>Modifier la photo</span><input type="file" accept="image/png,image/jpeg,image/webp" onChange={changePhoto} /></label><h2>{profile.firstName} {profile.lastName}</h2><p>{profile.email}</p><span className="status-pill status-confirmed">Profil de démonstration</span></div><Link href="/hote" className="profile-shortcut"><span className="shortcut-mark">⌂</span><span><strong>Passer en mode propriétaire</strong><small>Gérer vos annonces et séjours</small></span><ChevronRight size={17} /></Link><Link href="/admin" className="profile-shortcut"><span className="shortcut-mark">IC</span><span><strong>Console de démonstration</strong><small>Interface d’administration</small></span><ChevronRight size={17} /></Link></div><div className="profile-main"><form className="profile-form" onSubmit={save}><h2>Vos informations</h2><p>Les changements sont enregistrés localement dans cette démo.</p><div className="form-two-col"><label>Prénom<input value={profile.firstName} onChange={(e) => setProfile({ ...profile, firstName: e.target.value })} /></label><label>Nom<input value={profile.lastName} onChange={(e) => setProfile({ ...profile, lastName: e.target.value })} /></label></div><label>E-mail<input type="email" value={profile.email} onChange={(e) => setProfile({ ...profile, email: e.target.value })} /></label><label>Téléphone<input value={profile.phone} onChange={(e) => setProfile({ ...profile, phone: e.target.value })} /></label><div className="profile-form-footer"><span><ShieldCheck size={15} /> Vos informations ne quittent pas ce navigateur.</span><button className="button button-primary" type="submit">Enregistrer</button></div></form><div className="profile-stats"><div><Heart size={19} /><strong>{favorites.length}</strong><span>Favoris</span></div><div><CalendarDays size={19} /><strong>{bookings.length}</strong><span>Séjours</span></div><div><Mail size={19} /><strong>1</strong><span>Conversation</span></div></div><div className="profile-link-grid"><Link href="/favoris">Mes favoris <ArrowRight size={16} /></Link><Link href="/mes-reservations">Mes séjours <ArrowRight size={16} /></Link><Link href="/messages">Messages <ArrowRight size={16} /></Link><Link href="/notifications">Notifications <ArrowRight size={16} /></Link><Link href="/recherches-sauvegardees">Recherches sauvegardées <ArrowRight size={16} /></Link><Link href="/parametres">Paramètres du compte <ArrowRight size={16} /></Link></div><button className="danger-link" onClick={() => setLocation("/parametres#suppression")}>Suppression du compte</button></div></div></section>;
+  return (
+    <section className="content-section page-section">
+      <div className="breadcrumb"><Link href="/">Accueil</Link><span>/</span> Profil</div>
+      <div className="section-heading"><div><span className="eyebrow">VOTRE ESPACE</span><h1>Ravi de vous accueillir, {profile.firstName}.</h1><p>Compte unique de démonstration · client et propriétaire.</p></div></div>
+      <div className="profile-grid">
+        <div className="profile-sidebar">
+          <div className="profile-intro-card">
+            <label className="avatar-photo-editor" aria-label="Modifier la photo du profil"><span className="avatar profile-avatar">{profile.avatar ? <img src={profile.avatar} alt="Photo de profil" /> : initials}</span><span>Modifier la photo</span><input type="file" accept="image/png,image/jpeg,image/webp" onChange={changePhoto} /></label>
+            <h2>{profile.firstName} {profile.lastName}</h2><p>{profile.email}</p><span className="status-pill status-confirmed">Profil de démonstration</span>
+          </div>
+          <Link href="/hote" className="profile-shortcut"><span className="shortcut-mark">⌂</span><span><strong>Passer en mode propriétaire</strong><small>Gérer vos annonces et séjours</small></span><ChevronRight size={17} /></Link>
+        </div>
+        <div className="profile-main">
+          <form className="profile-form" onSubmit={save}>
+            <h2>Vos informations</h2><p>Les changements sont enregistrés localement dans cette démo.</p>
+            <div className="form-two-col"><label>Prénom<input value={profile.firstName} onChange={(e) => setProfile({ ...profile, firstName: e.target.value })} /></label><label>Nom<input value={profile.lastName} onChange={(e) => setProfile({ ...profile, lastName: e.target.value })} /></label></div>
+            <label>E-mail<input type="email" value={profile.email} onChange={(e) => setProfile({ ...profile, email: e.target.value })} /></label>
+            <label>Téléphone<input value={profile.phone} onChange={(e) => setProfile({ ...profile, phone: e.target.value })} /></label>
+            <div className="profile-form-footer"><span><ShieldCheck size={15} /> Les modifications de ce formulaire restent locales à la démo.</span><button className="button button-primary" type="submit">Enregistrer</button></div>
+          </form>
+          <div className="profile-stats"><div><Heart size={19} /><strong>{favorites.length}</strong><span>Favoris</span></div><div><CalendarDays size={19} /><strong>{bookings.length}</strong><span>Séjours</span></div><div><Mail size={19} /><strong>1</strong><span>Conversation</span></div></div>
+          <div className="profile-link-grid"><Link href="/favoris">Mes favoris <ArrowRight size={16} /></Link><Link href="/mes-reservations">Mes séjours <ArrowRight size={16} /></Link><Link href="/messages">Messages <ArrowRight size={16} /></Link><Link href="/notifications">Notifications <ArrowRight size={16} /></Link><Link href="/recherches-sauvegardees">Recherches sauvegardées <ArrowRight size={16} /></Link><Link href="/parametres">Paramètres du compte <ArrowRight size={16} /></Link></div>
+          <button className="danger-link" onClick={() => setLocation("/parametres#suppression")}>Suppression du compte</button>
+        </div>
+      </div>
+    </section>
+  );
 }
 
 export function SettingsPage() {
