@@ -1,0 +1,122 @@
+import { useMemo, useState, type FormEvent, type ReactNode } from "react";
+import { Link, useLocation } from "wouter";
+import { ArrowRight, BadgeCheck, Building2, CalendarDays, CalendarRange, Check, ChevronRight, CircleDollarSign, Clock3, FileText, LayoutDashboard, MessageCircle, Plus, ShieldCheck, Upload, Wallet } from "lucide-react";
+import { formatDate, formatPrice, seedProperties, type Property } from "@/data/demo";
+import { useDemo } from "@/components/DemoStore";
+
+const hostLinks = [
+  { label: "Vue d’ensemble", href: "/hote", icon: LayoutDashboard },
+  { label: "Mes logements", href: "/hote/logements", icon: Building2 },
+  { label: "Calendrier", href: "/hote/calendrier", icon: CalendarDays },
+  { label: "Demandes & séjours", href: "/hote/demandes", icon: MessageCircle },
+  { label: "Revenus", href: "/hote/revenus", icon: Wallet },
+  { label: "Vérification", href: "/hote/verification", icon: BadgeCheck },
+];
+
+function HostWorkspace({ title, subtitle, children }: { title: string; subtitle: string; children: ReactNode }) {
+  const [location] = useLocation();
+  return <section className="content-section host-section"><div className="host-welcome"><div><span className="eyebrow">VOTRE ESPACE HÔTE · MODE DÉMO</span><h1>{title}</h1><p>{subtitle}</p></div><Link className="button button-primary" href="/hote/logement/nouveau"><Plus size={17} /> Ajouter un logement</Link></div><div className="host-workspace"><aside className="host-sidenav"><div className="host-side-profile"><span className="avatar">AD</span><span><strong>Aïcha D.</strong><small>Compte de démonstration</small></span></div>{hostLinks.map(({ label, href, icon: Icon }) => <Link key={href} href={href} className={`host-side-link ${location === href ? "active" : ""}`}><Icon size={17} />{label}</Link>)}<div className="host-help-card"><span>ICIMO est en mode démo</span><p>Vos actions et montants ne sont transmis à aucun serveur.</p></div></aside><div className="host-work-content">{children}</div></div></section>;
+}
+
+export function HostDashboardPage() {
+  const { bookings, properties } = useDemo();
+  const active = bookings.filter((item) => item.end >= new Date().toISOString().slice(0, 10)).length + 2;
+  return <HostWorkspace title="Bonjour Aïcha." subtitle="Votre activité, en un seul endroit." ><div className="dashboard-banner"><div><span className="eyebrow eyebrow-light">SUIVI DU MOIS · EXEMPLE</span><h2>Les belles rencontres commencent à la maison.</h2><p>Les chiffres de cet espace sont fictifs et modifiables en démo.</p><Link href="/hote/logements" className="button button-light">Gérer mes logements <ArrowRight size={15} /></Link></div><div className="dashboard-banner-ornament"><Building2 size={62} /></div></div><div className="metric-grid"><article><span><CircleDollarSign size={19} /> Revenus estimés</span><strong>{formatPrice(684000)}</strong><small>+12 % vs mois précédent · démo</small></article><article><span><CalendarRange size={19} /> Séjours actifs</span><strong>{active}</strong><small>Réservations de démonstration</small></article><article><span><FileText size={19} /> Demandes à traiter</span><strong>3</strong><small>1 nouvelle aujourd’hui · fictif</small></article><article><span><Building2 size={19} /> Annonces visibles</span><strong>{properties.length}</strong><small>Exemples de logements</small></article></div><div className="dashboard-columns"><section className="dashboard-panel"><div className="panel-heading"><div><h2>La semaine en un coup d’œil</h2><p>Calendrier de démonstration</p></div><Link className="text-link" href="/hote/calendrier">Tout voir <ArrowRight size={14} /></Link></div><div className="week-strip">{Array.from({ length: 7 }, (_, index) => { const date = new Date(); date.setDate(date.getDate() + index); return <div key={index} className={index === 2 ? "today" : ""}><small>{new Intl.DateTimeFormat("fr-FR", { weekday: "short" }).format(date)}</small><strong>{date.getDate()}</strong><i className={index === 2 || index === 5 ? "busy" : ""} /></div>; })}</div><div className="calendar-key"><span><i className="calendar-key-free" /> Disponible</span><span><i className="calendar-key-booked" /> Réservé (démo)</span></div></section><section className="dashboard-panel"><div className="panel-heading"><div><h2>À ne pas manquer</h2><p>Activité de votre espace</p></div><Link className="text-link" href="/hote/demandes">Tout voir <ArrowRight size={14} /></Link></div><div className="todo-activity"><div className="activity-icon amber"><MessageCircle size={17} /></div><div><strong>Demande de location au mois</strong><p>La chambre claire de Calavi · il y a 2 h</p></div><span className="activity-unread" /></div><div className="todo-activity"><div className="activity-icon green"><BadgeCheck size={17} /></div><div><strong>Complétez votre vérification</strong><p>Une étape pour rassurer vos prochains voyageurs.</p></div></div></section></div></HostWorkspace>;
+}
+
+export function HostListingsPage() {
+  const { properties, notify } = useDemo();
+  return <HostWorkspace title="Mes logements." subtitle="Un aperçu simple de vos adresses et de leur visibilité."><div className="host-list-header"><div><span className="eyebrow">ANNONCES DE DÉMONSTRATION</span><h2>{properties.length} logement{properties.length > 1 ? "s" : ""}</h2></div><Link href="/hote/logement/nouveau" className="button button-primary"><Plus size={16} /> Créer une annonce</Link></div><div className="host-property-list">{properties.map((property) => <article key={property.slug} className="host-property-row"><img src={property.image} alt="" /><div className="host-property-info"><span className="status-pill status-confirmed">{property.kind === "long" ? "Longue durée" : property.kind === "both" ? "Courte & longue durée" : "Courte durée"} · fictif</span><h3>{property.title}</h3><p>{property.district}, {property.city} · {property.guests} voyageurs · {property.beds} chambre{property.beds > 1 ? "s" : ""}</p><div className="host-property-prices"><span>{formatPrice(property.priceNight)} / nuit</span><span>{formatPrice(property.priceMonth)} / mois</span></div></div><div className="host-property-actions"><button className="button button-outline button-small" onClick={() => notify("L’aperçu public est une annonce fictive.")}><FileText size={14} /> Aperçu</button><Link className="button button-primary button-small" href={`/hote/logement/${property.slug}/modifier`}>Modifier</Link></div></article>)}</div><div className="demo-notice"><ShieldCheck size={17} /><span>Images et informations de ces annonces sont des exemples. Les fichiers importés ici restent dans la session de démonstration.</span></div></HostWorkspace>;
+}
+
+export function ListingEditorPage({ slug }: { slug?: string }) {
+  const { properties, setProperties, notify } = useDemo();
+  const [, setLocation] = useLocation();
+  const existing = slug ? properties.find((property) => property.slug === slug) : undefined;
+  const [title, setTitle] = useState(existing?.title ?? "");
+  const [city, setCity] = useState(existing?.city ?? "Cotonou");
+  const [district, setDistrict] = useState(existing?.district ?? "");
+  const [kind, setKind] = useState(existing?.kind ?? "both");
+  const [description, setDescription] = useState(existing?.summary ?? "");
+  const [nightly, setNightly] = useState(existing?.priceNight.toString() ?? "30000");
+  const [monthly, setMonthly] = useState(existing?.priceMonth.toString() ?? "300000");
+  const [capacity, setCapacity] = useState(existing?.guests.toString() ?? "2");
+  const [beds, setBeds] = useState(existing?.beds.toString() ?? "1");
+  const [baths, setBaths] = useState(existing?.baths.toString() ?? "1");
+  const [area, setArea] = useState(existing?.area.toString() ?? "52");
+  const [furnished, setFurnished] = useState(existing?.furnished ?? true);
+  const [selectedAmenities, setSelectedAmenities] = useState<string[]>(existing?.amenities ?? ["Wi-Fi", "Climatisation", "Cuisine équipée"]);
+  const [rules, setRules] = useState(existing?.rules.join(", ") ?? "Arrivée à convenir, logement non-fumeur");
+  const [preview, setPreview] = useState(existing?.image ?? "");
+  const [message, setMessage] = useState("");
+
+  function save(event: FormEvent) {
+    event.preventDefault();
+    const safeSlug = existing?.slug ?? `annonce-${Date.now()}`;
+    const property: Property = {
+      ...(existing ?? seedProperties[0]), slug: safeSlug, title: title.trim() || "Mon logement au Bénin", city, district: district.trim() || "Quartier à préciser",
+      image: preview || existing?.image || seedProperties[0].image, priceNight: Number(nightly) || 0, priceMonth: Number(monthly) || 0,
+      guests: Number(capacity), beds: Number(beds), baths: Number(baths), area: Number(area), kind,
+      furnished, amenities: selectedAmenities, summary: description || "Description à compléter.", rules: rules.split(",").map((rule) => rule.trim()).filter(Boolean),
+    };
+    setProperties((items) => existing ? items.map((item) => item.slug === safeSlug ? property : item) : [property, ...items]);
+    setMessage("Votre annonce de démonstration est enregistrée localement.");
+    notify(existing ? "Logement mis à jour dans la démo." : "Brouillon de logement ajouté à la démo.");
+    window.setTimeout(() => setLocation("/hote/logements"), 800);
+  }
+
+  return <HostWorkspace title={existing ? "Modifier l’annonce." : "Une nouvelle adresse."} subtitle="Complétez les informations pour créer un aperçu de logement."><form className="listing-editor" onSubmit={save}><div className="editor-step"><span className="editor-step-num">01</span><div className="editor-step-content"><h2>Les essentiels</h2><p>Les informations qui permettent de se repérer.</p><div className="form-two-col"><label>Nom du logement<input required value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ex. Maison calme à Haie Vive" /></label><label>Type de location<select value={kind} onChange={(e) => setKind(e.target.value as typeof kind)}><option value="both">Courte et longue durée</option><option value="short">Courte durée</option><option value="long">Longue durée</option></select></label><label>Ville<input required list="host-cities" value={city} onChange={(e) => setCity(e.target.value)} /><datalist id="host-cities"><option>Cotonou</option><option>Abomey-Calavi</option><option>Porto-Novo</option><option>Grand-Popo</option><option>Ouidah</option></datalist></label><label>Quartier / zone<input required value={district} onChange={(e) => setDistrict(e.target.value)} placeholder="Ex. Fidjrossè" /></label></div><label className="wide-field">Description<textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={4} placeholder="Décrivez ce qui rend cet endroit particulier…" /></label></div></div><div className="editor-step"><span className="editor-step-num">02</span><div className="editor-step-content"><h2>Capacité et confort</h2><p>Quelques repères utiles pour vos futurs voyageurs.</p><div className="form-four-col"><label>Voyageurs<input type="number" min="1" value={capacity} onChange={(e) => setCapacity(e.target.value)} /></label><label>Chambres<input type="number" min="0" value={beds} onChange={(e) => setBeds(e.target.value)} /></label><label>Salles de bain<input type="number" min="1" value={baths} onChange={(e) => setBaths(e.target.value)} /></label><label>Surface (m²)<input type="number" min="1" value={area} onChange={(e) => setArea(e.target.value)} /></label></div><label className="check-label"><input type="checkbox" checked={furnished} onChange={(e) => setFurnished(e.target.checked)} /> Logement meublé</label><span className="amenity-editor-title">Équipements · sélectionnez tout ce qui convient</span><div className="amenity-editor-grid">{["Wi-Fi", "Climatisation", "Cuisine équipée", "Kitchenette", "Terrasse", "Jardin", "Parking", "Eau chaude", "Lave-linge", "Bureau", "Gardien", "Sécurité"].map((item) => <label key={item}><input type="checkbox" checked={selectedAmenities.includes(item)} onChange={(e) => setSelectedAmenities((items) => e.target.checked ? Array.from(new Set([...items, item])) : items.filter((value) => value !== item))} /> {item}</label>)}</div></div></div><div className="editor-step"><span className="editor-step-num">03</span><div className="editor-step-content"><h2>Prix et règles</h2><p>Affichez des montants clairs en francs CFA.</p><div className="form-two-col"><label>Prix par nuit (F CFA)<input type="number" min="0" value={nightly} onChange={(e) => setNightly(e.target.value)} /></label><label>Prix par mois (F CFA)<input type="number" min="0" value={monthly} onChange={(e) => setMonthly(e.target.value)} /></label></div><label>Règles, séparées par des virgules<input value={rules} onChange={(e) => setRules(e.target.value)} /></label></div></div><div className="editor-step"><span className="editor-step-num">04</span><div className="editor-step-content"><h2>Photos et aperçu</h2><p>La sélection d’un fichier est une prévisualisation locale uniquement.</p><label className="upload-drop"><Upload size={22} /><strong>Ajouter une photo (démo)</strong><small>JPG, PNG · fichier non envoyé à un serveur</small><input type="file" accept="image/png,image/jpeg,image/webp" onChange={(e) => { const file = e.target.files?.[0]; if (file) setPreview(URL.createObjectURL(file)); }} /></label>{preview && <img className="editor-preview-image" src={preview} alt="Aperçu local du logement" />}</div></div><div className="editor-submit">{message && <span className="success-inline"><Check size={15} /> {message}</span>}<button className="button button-primary" type="submit">{existing ? "Enregistrer les modifications" : "Créer l’annonce démo"} <ArrowRight size={16} /></button></div></form></HostWorkspace>;
+}
+
+function dateKey(date: Date) { return date.toISOString().slice(0, 10); }
+function weekDates(start: Date, count: number) { return Array.from({ length: count }, (_, index) => { const day = new Date(start); day.setDate(start.getDate() + index); return day; }); }
+
+export function HostCalendarPage() {
+  const { bookings, properties, blockedDates, setBlockedDates, notify } = useDemo();
+  const [shift, setShift] = useState(0);
+  const start = new Date(); start.setDate(start.getDate() + shift * 7);
+  const dates = useMemo(() => weekDates(start, 14), [shift]);
+  const confirmed = bookings.filter((item) => item.status === "confirmed");
+  function toggle(day: string) { setBlockedDates((items) => items.includes(day) ? items.filter((item) => item !== day) : [...items, day]); }
+  return <HostWorkspace title="Le calendrier." subtitle="Gardez vos disponibilités sous les yeux."><div className="calendar-toolbar"><div><span className="eyebrow">DISPONIBILITÉS · DÉMO</span><h2>{new Intl.DateTimeFormat("fr-FR", { month: "long", year: "numeric" }).format(start)}</h2></div><div><button className="button button-outline button-small" onClick={() => setShift(shift - 1)}>Précédent</button><button className="button button-outline button-small" onClick={() => setShift(shift + 1)}>Suivant</button></div></div><div className="calendar-scroll-wrap"><div className="calendar-grid-head">{dates.map((day) => <div key={day.toISOString()}><span>{new Intl.DateTimeFormat("fr-FR", { weekday: "short" }).format(day)}</span><strong>{day.getDate()}</strong></div>)}</div><div className="calendar-property-rows">{properties.slice(0, 3).map((property, row) => <div className="calendar-property-row" key={property.slug}><div className="calendar-property-name"><img src={property.image} alt="" /><span>{property.title}</span></div><div className="calendar-day-cells">{dates.map((day, index) => { const key = dateKey(day); const booked = confirmed.some((booking) => booking.slug === property.slug && booking.start <= key && booking.end > key); const blocked = blockedDates.includes(`${property.slug}:${key}`) || blockedDates.includes(key); return <button key={key} className={`${booked ? "is-booked" : blocked ? "is-blocked" : "is-open"} ${index === 0 ? "first-day" : ""}`} aria-label={`${key}, ${booked ? "réservé" : blocked ? "bloqué" : "disponible"}`} onClick={() => { if (!booked) { toggle(`${property.slug}:${key}`); notify(blocked ? "Date rouverte dans la démo." : "Date bloquée dans le calendrier démo."); } }} title={booked ? "Réservation de démonstration" : blocked ? "Cliquer pour rouvrir" : "Cliquer pour bloquer"}>{booked ? "Réservé" : blocked ? "Indisponible" : index === 0 && row === 0 ? "Aujourd’hui" : "Disponible"}</button>; })}</div></div>)}</div></div><div className="calendar-key"><span><i className="calendar-key-free" /> Disponible</span><span><i className="calendar-key-booked" /> Réservation</span><span><i className="calendar-key-blocked" /> Bloqué par vous</span></div><div className="demo-notice"><ShieldCheck size={17} /><span>Les disponibilités sont enregistrées localement uniquement et ne préviennent pas une double réservation sur un vrai service.</span></div></HostWorkspace>;
+}
+
+export function HostRequestsPage() {
+  const { bookings, setBookings, properties, setBlockedDates, setNotifications, notify } = useDemo();
+  const [view, setView] = useState<"requests" | "stays" | "accepted">(() => new URLSearchParams(window.location.search).get("type") === "court" ? "stays" : "requests");
+  const longRequests = bookings.filter((booking) => booking.kind === "long" && booking.status === "request");
+  const confirmed = bookings.filter((booking) => booking.status === "confirmed");
+  const accepted = bookings.filter((booking) => booking.kind === "long" && booking.status === "accepted");
+  const declined = bookings.filter((booking) => booking.kind === "long" && booking.status === "declined");
+
+  function respond(bookingId: string, accepted: boolean) {
+    const booking = bookings.find((item) => item.id === bookingId);
+    if (!booking) return;
+    const property = properties.find((item) => item.slug === booking.slug);
+    setBookings((items) => items.map((item) => item.id === bookingId ? { ...item, status: accepted ? "accepted" : "declined" } : item));
+    if (accepted) {
+      const days: string[] = [];
+      const current = new Date(`${booking.start}T12:00:00`);
+      const end = new Date(`${booking.end}T12:00:00`);
+      while (current < end) { days.push(`${booking.slug}:${dateKey(current)}`); current.setDate(current.getDate() + 1); }
+      setBlockedDates((items) => Array.from(new Set([...items, ...days])));
+    }
+    setNotifications((items) => [{ id: `n-${bookingId}-${accepted ? "ok" : "no"}`, title: accepted ? "Demande acceptée · bail à définir · démo" : "Demande déclinée · démo", body: `${property?.title ?? "Logement"} · ${formatDate(booking.start)}`, time: "À l’instant", read: false, type: "booking" }, ...items]);
+    notify(accepted ? "Demande acceptée ; les dates sont bloquées dans la démo." : "Demande déclinée uniquement dans la démo.");
+  }
+
+  function requestCard(booking: (typeof bookings)[number], statusLabel: string, actions?: boolean) {
+    const property = properties.find((item) => item.slug === booking.slug);
+    const months = Math.max(1, Math.round((new Date(`${booking.end}T12:00:00`).getTime() - new Date(`${booking.start}T12:00:00`).getTime()) / 86_400_000 / 30));
+    return <article key={booking.id} className="request-card"><span className="avatar">{property?.ownerInitials ?? "IC"}</span><div className="request-card-body"><span className={`status-pill ${booking.status === "confirmed" ? "status-confirmed" : "status-request"}`}>{statusLabel} · démo</span><h3>{property?.title ?? "Logement"}</h3><p>{booking.kind === "long" ? `Demande pour ${months} mois` : "Courte durée"} · {booking.guests} voyageurs</p><small>{formatDate(booking.start)} — {formatDate(booking.end)} · réf. {booking.id}</small></div><div className="request-card-actions">{actions ? <><button className="button button-outline button-small" onClick={() => respond(booking.id, false)}>Décliner</button><button className="button button-primary button-small" onClick={() => respond(booking.id, true)}>Accepter</button></> : <button className="button button-outline button-small" onClick={() => notify("Conversation de démonstration ouverte ; aucun message n’est envoyé.")}>Message · démo</button>}</div></article>;
+  }
+
+  return <HostWorkspace title="Demandes & séjours." subtitle="Suivez les prochaines étapes sans perdre le fil."><div className="request-tabs"><button className={view === "requests" ? "active" : ""} onClick={() => setView("requests")}>Demandes en attente · {longRequests.length}</button><button className={view === "accepted" ? "active" : ""} onClick={() => setView("accepted")}>Demandes acceptées · {accepted.length}</button><button className={view === "stays" ? "active" : ""} onClick={() => setView("stays")}>Séjours confirmés · {confirmed.length}</button></div><div className="request-list">{view === "requests" ? <>{longRequests.map((booking) => requestCard(booking, "À examiner", true))}{declined.map((booking) => requestCard(booking, "Déclinée", false))}{!longRequests.length && !declined.length && <div className="empty-state"><h2>Aucune demande en attente</h2><p>Les nouvelles demandes longue durée apparaîtront ici.</p></div>}</> : view === "accepted" ? accepted.map((booking) => requestCard(booking, "Acceptée · contrat à définir", false)) : confirmed.map((booking) => requestCard(booking, "Séjour confirmé", false))}</div><div className="demo-notice"><MessageCircle size={16} /><span>Un accord longue durée ne vaut pas signature de bail ni confirmation finale. Les décisions et notifications restent locales ; aucun client réel n’est prévenu.</span></div></HostWorkspace>;
+}
+
+export function HostRevenuePage() {
+  const { bookings, properties, demoFee } = useDemo();
+  const confirmed = bookings.filter((booking) => booking.status === "confirmed");
+  const total = confirmed.reduce((sum, booking) => sum + booking.total, 0);
+  return <HostWorkspace title="Vos revenus." subtitle="Un aperçu indicatif des séjours et versements."><div className="metric-grid revenue-metrics"><article><span><CircleDollarSign size={18} /> Volume de réservations · démo</span><strong>{formatPrice(total + 524000)}</strong><small>Y compris des exemples prédéfinis</small></article><article><span><Wallet size={18} /> Versements disponibles</span><strong>{formatPrice(382000)}</strong><small>Montant fictif · hors règle réelle</small></article><article><span><Clock3 size={18} /> En attente</span><strong>{formatPrice(142000)}</strong><small>Décaissements de démonstration</small></article></div><section className="dashboard-panel"><div className="panel-heading"><div><h2>Activité financière</h2><p>Les commissions ICIMO sont ici réglées à {demoFee} % · démonstration.</p></div><Link href="/admin?section=finances" className="text-link">Voir les réglages <ArrowRight size={14} /></Link></div><div className="revenue-chart" aria-label="Graphique illustratif des revenus"><div className="chart-y-labels"><span>600 k</span><span>400 k</span><span>200 k</span><span>0</span></div><div className="chart-bars">{[34, 53, 41, 65, 48, 82, 57, 91, 69, 75, 49, 88].map((height, i) => <div key={i} className="chart-column"><i style={{ height: `${height}%` }} /><span>{["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Aoû", "Sep", "Oct", "Nov", "Déc"][i]}</span></div>)}</div></div></section><section className="dashboard-panel payout-panel"><div className="panel-heading"><div><h2>Versements récents</h2><p>Flux financiers simulés, aucun transfert réel.</p></div><button className="button button-outline button-small">Télécharger le récapitulatif <FileText size={14} /></button></div><div className="table-wrap"><table><thead><tr><th>Référence</th><th>Logement</th><th>Date indicative</th><th>Statut</th><th>Montant</th></tr></thead><tbody>{bookings.slice(0, 4).map((booking) => { const property = properties.find((item) => item.slug === booking.slug); return <tr key={booking.id}><td>{booking.id}</td><td>{property?.title}</td><td>{formatDate(booking.start)}</td><td><span className="status-pill status-confirmed">Démo · estimé</span></td><td>{formatPrice(Math.max(0, booking.total * (1 - demoFee / 100)))}</td></tr>; })}<tr><td>IC-DEMO-883</td><td>Versement illustratif</td><td>À définir</td><td><span className="status-pill status-request">En attente · démo</span></td><td>{formatPrice(142000)}</td></tr></tbody></table></div></section><div className="demo-notice"><ShieldCheck size={17} /><span>Les montants et commissions n’ont aucune valeur comptable. Saspay.me et les décaissements seront branchés côté backend.</span></div></HostWorkspace>;
+}

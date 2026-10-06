@@ -1,59 +1,41 @@
-# ICIMO
+# ICIMO — location immobilière au Bénin
 
-Plateforme africaine de location immobilière, lancement initial au Bénin.
-Une marque d'**ICE HOLDING**.
+ICIMO est une interface de démonstration responsive pour la recherche et la location de logements au Bénin, en courte ou longue durée. Les données et parcours client, propriétaire et administration sont simulés localement dans le navigateur.
 
-ICIMO réunit dans une seule application la recherche de logements, la messagerie avec le propriétaire, la réservation, le paiement et la gestion propriétaire (courte et longue durée).
+## Démarrage local
 
-## Stack
-
-| Brique | Rôle |
-| --- | --- |
-| Next.js 15 (App Router) + TypeScript | Application web mobile-first et routes API |
-| Vercel | Hébergement et déploiement |
-| Supabase | PostgreSQL, authentification, stockage média, temps réel |
-| Saspay.me | Encaissement et décaissement (Bénin) |
-| GitHub | Code source et workflow |
-
-Le serveur reste la source de vérité pour les réservations, disponibilités, paiements, commissions et autorisations.
-
-## Démarrer en local
+Prérequis : Node.js 22 et pnpm 10 (la version pnpm est indiquée dans `package.json`).
 
 ```bash
-npm install
-cp .env.example .env.local   # puis renseigner les valeurs
-npm run dev
+pnpm install --frozen-lockfile
+pnpm dev:static
 ```
 
-Le site tourne sur http://localhost:3000.
+Ouvrir `http://localhost:3000`.
 
-## Structure
+## Vérification et build
 
-```
-app/
-  layout.tsx        Layout racine (polices, métadonnées)
-  page.tsx          Landing page
-  explorer/         Plateforme (accès sans connexion) — provisoire
-  globals.css       Styles globaux et tokens de design
-components/         Logo, Skyline (illustration du hero), OwnerCalendar
+```bash
+pnpm check
+pnpm test
+pnpm build:static
 ```
 
-## Parcours prévu
+La sortie statique est générée dans `dist/public/`.
 
-1. **Landing page** : présente ICIMO, un bouton invite à explorer la plateforme sans connexion.
-2. **Plateforme** (`/explorer`) : navigation, recherche, résultats et fiches logements accessibles sans compte.
-3. **Inscription à la demande** : le compte n'est demandé qu'au moment d'une action (contacter, réserver, favori).
+## Périmètre actuel
 
-## Design
+- Interface React, TypeScript, Vite, Wouter et Tailwind CSS.
+- Parcours de démonstration : recherche et filtres, annonces, favoris, authentification simulée, réservation courte durée, demande longue durée, messagerie, profil, avis, espace propriétaire, calendrier et administration.
+- Les exemples et préférences sont conservés localement dans le navigateur ; les images de démonstration sont versionnées sous `client/public/assets/`.
+- Aucun compte réel, paiement, SMS, e-mail, réservation serveur, contrôle de disponibilité serveur ni stockage de documents privé n’est configuré. Il ne s’agit pas d’un backend ICIMO.
 
-- Palette : indigo (`#14205C`), soleil (`#FFC233`), lagune (`#23B5A5`), craie (`#F4F6FB`).
-- Titres : Bricolage Grotesque. Texte : Instrument Sans (auto-hébergées via Fontsource).
-- Mobile-first, focus clavier visible, animations désactivées si `prefers-reduced-motion`.
+## Structure utile
 
-## Environnements
+- `client/src/pages/` : parcours client, propriétaire et administration.
+- `client/src/components/` : coque responsive, navigation et magasin local de démonstration.
+- `client/src/data/demo.ts` : types, annonces et exemples de données.
+- `client/public/assets/` : visuels originaux des annonces de démonstration.
+- `TODO.md` : périmètre réalisé et limites de la démo.
 
-Développement, staging et production doivent rester séparés. Les clés secrètes (Supabase service role, Saspay.me) ne sont utilisées que côté serveur et ne sont jamais committées.
-
-## Feuille de route MVP
-
-Comptes, recherche, annonces, vérification, favoris, chat, réservation courte durée, paiement, espace propriétaire, calendrier, notifications, avis et back-office.
+Le dépôt comprend encore le squelette technique générique fourni par le starter Manus ; les parcours ICIMO ne sont pas raccordés à ses services. À la prochaine étape, remplacer l’état local par le backend choisi et faire du serveur la source de vérité des comptes, rôles, annonces, disponibilités, réservations et paiements. Supabase et Saspay.me restent des choix prévus mais non intégrés.
