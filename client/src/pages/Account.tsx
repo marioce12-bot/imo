@@ -37,8 +37,18 @@ export function AuthPage({ mode = "connexion" }: { mode?: string }) {
   const isRecovery = isReset && (passwordRecovery || (typeof window !== "undefined" && (window.location.hash.includes("type=recovery") || new URLSearchParams(window.location.search).get("type") === "recovery")));
 
   useEffect(() => {
-    if (user && mode === "connexion") setLocation("/");
-  }, [mode, setLocation, user]);
+    if (!user || mode !== "connexion") return;
+    const fullName = String(user.user_metadata?.full_name ?? user.user_metadata?.name ?? user.email?.split("@")[0] ?? "Utilisateur");
+    const [firstName, ...last] = fullName.trim().split(/\s+/);
+    setProfile((current) => ({
+      ...current,
+      firstName: firstName || "Utilisateur",
+      lastName: last.join(" "),
+      email: user.email ?? current.email,
+      phone: typeof user.user_metadata?.phone === "string" ? user.user_metadata.phone : current.phone,
+    }));
+    setLocation("/");
+  }, [mode, setLocation, setProfile, user]);
 
   async function submit(event: FormEvent) {
     event.preventDefault();
