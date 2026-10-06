@@ -1,0 +1,10 @@
+export const ADMIN_COOKIE_NAME: string;
+export const ADMIN_SESSION_TTL_SECONDS: number;
+export function isAdminPasswordConfigured(): boolean;
+export function verifyAdminPassword(candidate: unknown): boolean;
+export function createAdminSessionToken(nowMs?: number): string;
+export function isValidAdminSessionToken(token: string | undefined, nowMs?: number): boolean;
+export function getAdminTokenFromCookie(cookieHeader: string | undefined): string | undefined;
+export function isAdminRequestAuthenticated(cookieHeader: string | undefined, nowMs?: number): boolean;
+export function createAdminCookie(token: string): string;
+export function clearAdminCookie(): string;

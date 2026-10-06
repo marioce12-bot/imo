@@ -1,5 +1,5 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
-import { createAdminCookie, createAdminSessionToken, isAdminPasswordConfigured, verifyAdminPassword } from "../../server/adminSession";
+import { createAdminCookie, createAdminSessionToken, isAdminPasswordConfigured, verifyAdminPassword } from "../../server/adminSessionRuntime.js";
 
 type ApiRequest = IncomingMessage & { body?: unknown };
 

@@ -1,5 +1,5 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
-import { isAdminPasswordConfigured, isAdminRequestAuthenticated } from "../../server/adminSession";
+import { isAdminPasswordConfigured, isAdminRequestAuthenticated } from "../../server/adminSessionRuntime.js";
 
 export default function handler(req: IncomingMessage, res: ServerResponse) {
   res.setHeader("Cache-Control", "no-store");

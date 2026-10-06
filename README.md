@@ -42,7 +42,8 @@ Supabase Auth n’implémente pas l’autorisation des rôles propriétaire/admi
 - `client/src/pages/` : parcours client, propriétaire et administration.
 - `client/src/components/` : coque responsive, navigation et magasin local de démonstration.
 - `client/src/components/AdminAccess.tsx` : formulaire de verrouillage de la route `/admin`.
-- `api/admin/` et `server/adminSession.ts` : vérification serveur et cookie de session administrateur.
+- `api/admin/` et `server/adminSessionRuntime.js` : vérification serveur ESM et cookie de session administrateur (`server/adminSession.ts` ré-exporte le helper pour les tests).
+- `vercel.json` : réécriture de `/admin` vers l’application SPA.
 - `client/src/lib/supabase.tsx` : client public Supabase et état de session/authentification.
 - `client/src/data/demo.ts` : types, annonces et exemples de données.
 - `client/public/assets/` : visuels originaux des annonces de démonstration.

@@ -1,5 +1,5 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
-import { clearAdminCookie } from "../../server/adminSession";
+import { clearAdminCookie } from "../../server/adminSessionRuntime.js";
 
 export default function handler(req: IncomingMessage, res: ServerResponse) {
   res.setHeader("Cache-Control", "no-store");
