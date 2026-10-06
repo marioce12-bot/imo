@@ -3,6 +3,7 @@ import { Link, useLocation } from "wouter";
 import { ArrowLeft, ArrowRight, BadgeCheck, Bell, CalendarDays, Check, CheckCircle2, ChevronRight, CreditCard, FileText, Heart, LockKeyhole, Mail, MessageCircle, Search, ShieldCheck, Star, UserRound, Wallet } from "lucide-react";
 import { formatDate, formatPrice, type DemoBooking, type RentalKind } from "@/data/demo";
 import { useDemo } from "@/components/DemoStore";
+import { getSupabaseRedirectUrl, isSupabaseConfigured, supabase, useSupabaseAuth } from "@/lib/supabase";
 
 function todayPlus(days: number) {
   const date = new Date();
@@ -22,34 +23,115 @@ function addDays(start: string, days: number) {
 
 export function AuthPage({ mode = "connexion" }: { mode?: string }) {
   const { profile, setProfile, notify } = useDemo();
+  const { user, passwordRecovery, clearPasswordRecovery } = useSupabaseAuth();
   const [, setLocation] = useLocation();
   const [email, setEmail] = useState(profile.email);
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState(profile.phone);
   const [name, setName] = useState(`${profile.firstName} ${profile.lastName}`);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [busy, setBusy] = useState(false);
   const isSignup = mode === "inscription";
   const isOtp = mode === "otp";
   const isReset = mode === "mot-de-passe";
+  const isRecovery = isReset && (passwordRecovery || (typeof window !== "undefined" && (window.location.hash.includes("type=recovery") || new URLSearchParams(window.location.search).get("type") === "recovery")));
 
-  function submit(event: FormEvent) {
+  useEffect(() => {
+    if (user && mode === "connexion") setLocation("/");
+  }, [mode, setLocation, user]);
+
+  async function submit(event: FormEvent) {
     event.preventDefault();
+    setErrorMessage("");
     if (isOtp) {
       setLocation("/");
-      notify("Code de démonstration accepté · bienvenue sur ICIMO.");
+      notify(isSupabaseConfigured ? "Confirmez d’abord votre adresse e-mail pour vous connecter." : "Code de démonstration accepté · bienvenue sur ICIMO.");
       return;
     }
-    if (isSignup) {
-      const [firstName, ...last] = name.trim().split(" ");
-      setProfile((current) => ({ ...current, firstName: firstName || "Aïcha", lastName: last.join(" ") || "Dossou", email, phone }));
+
+    if (!supabase) {
+      if (isSignup) {
+        const [firstName, ...last] = name.trim().split(" ");
+        setProfile((current) => ({ ...current, firstName: firstName || "Aïcha", lastName: last.join(" ") || "Dossou", email, phone }));
+      }
+      if (!isReset) setLocation("/auth/otp");
+      else {
+        notify("Réinitialisation en démonstration · aucun e-mail n’est envoyé.");
+        setLocation("/auth/connexion");
+      }
+      return;
     }
-    if (!isReset) setLocation("/auth/otp");
-    else {
-      notify("Un lien de réinitialisation serait envoyé dans le parcours réel.");
-      setLocation("/auth/connexion");
+
+    setBusy(true);
+    try {
+      if (isRecovery) {
+        const { error } = await supabase.auth.updateUser({ password });
+        if (error) throw error;
+        clearPasswordRecovery();
+        notify("Mot de passe mis à jour avec Supabase.");
+        setLocation("/auth/connexion");
+        return;
+      }
+
+      if (isReset) {
+        const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+          redirectTo: getSupabaseRedirectUrl("/auth/mot-de-passe"),
+        });
+        if (error) throw error;
+        notify("Si cette adresse existe, Supabase enverra un lien de réinitialisation.");
+        setLocation("/auth/connexion");
+        return;
+      }
+
+      if (isSignup) {
+        const { data, error } = await supabase.auth.signUp({
+          email: email.trim(),
+          password,
+          options: {
+            data: { full_name: name.trim(), phone },
+            emailRedirectTo: getSupabaseRedirectUrl("/auth/connexion"),
+          },
+        });
+        if (error) throw error;
+        if (data.session && data.user) {
+          const [firstName, ...last] = name.trim().split(/\s+/);
+          setProfile((current) => ({ ...current, firstName: firstName || "Utilisateur", lastName: last.join(" "), email: email.trim(), phone }));
+          notify("Compte créé et connecté avec Supabase.");
+          setLocation("/");
+        } else {
+          notify("Compte créé. Confirmez votre adresse e-mail avant de vous connecter.");
+          setLocation("/auth/connexion");
+        }
+        return;
+      }
+
+      const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+      if (error) throw error;
+      if (data.user) {
+        const fullName = String(data.user.user_metadata?.full_name ?? data.user.user_metadata?.name ?? data.user.email?.split("@")[0] ?? "Utilisateur");
+        const [firstName, ...last] = fullName.trim().split(/\s+/);
+        setProfile((current) => ({
+          ...current,
+          firstName: firstName || "Utilisateur",
+          lastName: last.join(" "),
+          email: data.user.email ?? email,
+          phone: typeof data.user.user_metadata?.phone === "string" ? data.user.user_metadata.phone : current.phone,
+        }));
+      }
+      notify("Connexion sécurisée avec Supabase.");
+      setLocation("/");
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "Connexion à Supabase impossible. Réessayez.");
+    } finally {
+      setBusy(false);
     }
   }
 
-  return <section className="auth-page"><div className="auth-visual"><span className="eyebrow eyebrow-light">ICIMO · BÉNIN</span><h1>Une nouvelle adresse.<br /><em>De belles histoires.</em></h1><p>Un espace pour chercher, trouver et se sentir chez soi.</p><span className="auth-visual-note">Tous les formulaires sont en mode démonstration.</span></div><div className="auth-card"><Link className="back-link" href="/"><ArrowLeft size={16} /> Retour à l’accueil</Link><span className="eyebrow">VOTRE ESPACE ICIMO</span><h2>{isOtp ? "Vérifions votre numéro." : isSignup ? "Créons votre espace." : isReset ? "Un mot de passe à retrouver." : "Ravi de vous revoir."}</h2><p>{isOtp ? `Code de vérification envoyé à ${phone || email}. Saisissez un code fictif pour continuer.` : isSignup ? "Un seul compte pour réserver ou accueillir." : isReset ? "Indiquez l’e-mail de votre compte de démonstration." : "Connectez-vous à votre compte de démonstration."}</p><form className="stack-form" onSubmit={submit}>{isSignup && <label>Nom complet<input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Ex. Aïcha Dossou" /></label>}{(isSignup || isOtp) && <label>Téléphone<input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+229 61 00 00 00" /></label>}{!isOtp && <label>Adresse e-mail<input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="vous@exemple.com" /></label>}{isOtp && <label>Code à 6 chiffres<input required inputMode="numeric" pattern="[0-9]{4,6}" maxLength={6} placeholder="000000" /></label>}{!isReset && !isOtp && <label>Mot de passe<input type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="6 caractères minimum" /></label>}{mode === "connexion" && <div className="form-side-link"><span>Vous découvrez ICIMO ? <Link href="/auth/inscription">Créer un compte</Link></span><Link href="/auth/mot-de-passe">Mot de passe oublié ?</Link></div>}<button type="submit" className="button button-primary button-block">{isOtp ? "Continuer" : isSignup ? "Créer mon compte démo" : isReset ? "Préparer la réinitialisation" : "Continuer"} <ArrowRight size={16} /></button></form><div className="auth-security"><LockKeyhole size={15} /><span>Simulation locale uniquement · aucune donnée n’est envoyée.</span></div></div></section>;
+  if (isOtp && isSupabaseConfigured) {
+    return <section className="auth-page"><div className="auth-visual"><span className="eyebrow eyebrow-light">ICIMO · BÉNIN</span><h1>Votre adresse e-mail.<br /><em>Votre accès sécurisé.</em></h1><p>La confirmation de compte est gérée directement par Supabase.</p></div><div className="auth-card"><span className="eyebrow">VÉRIFICATION</span><h2>Consultez votre e-mail.</h2><p>Suivez le lien de confirmation envoyé par Supabase, puis connectez-vous à votre compte.</p><Link className="button button-primary button-block" href="/auth/connexion">Retour à la connexion <ArrowRight size={16} /></Link></div></section>;
+  }
+
+  return <section className="auth-page"><div className="auth-visual"><span className="eyebrow eyebrow-light">ICIMO · BÉNIN</span><h1>Une nouvelle adresse.<br /><em>De belles histoires.</em></h1><p>Un espace pour chercher, trouver et se sentir chez soi.</p><span className="auth-visual-note">{isSupabaseConfigured ? "Connexion sécurisée par Supabase." : "Mode démonstration · Supabase non configuré localement."}</span></div><div className="auth-card"><Link className="back-link" href="/"><ArrowLeft size={16} /> Retour à l’accueil</Link><span className="eyebrow">VOTRE ESPACE ICIMO</span><h2>{isRecovery ? "Choisissez un nouveau mot de passe." : isOtp ? "Vérifions votre numéro." : isSignup ? "Créons votre espace." : isReset ? "Un mot de passe à retrouver." : "Ravi de vous revoir."}</h2><p>{isRecovery ? "Définissez un nouveau mot de passe pour votre compte Supabase." : isOtp ? `Code de vérification envoyé à ${phone || email}. Saisissez un code fictif pour continuer.` : isSignup ? "Un seul compte pour réserver ou accueillir." : isReset ? "Indiquez l’e-mail de votre compte." : "Connectez-vous à votre compte ICIMO."}</p><form className="stack-form" onSubmit={submit}>{isSignup && <label>Nom complet<input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Ex. Aïcha Dossou" /></label>}{(isSignup || isOtp) && <label>Téléphone<input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+229 61 00 00 00" /></label>}{!isOtp && !isRecovery && <label>Adresse e-mail<input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="vous@exemple.com" /></label>}{isOtp && <label>Code à 6 chiffres<input required inputMode="numeric" pattern="[0-9]{4,6}" maxLength={6} placeholder="000000" /></label>}{(isRecovery || (!isReset && !isOtp)) && <label>{isRecovery ? "Nouveau mot de passe" : "Mot de passe"}<input type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="6 caractères minimum" /></label>}{mode === "connexion" && <div className="form-side-link"><span>Vous découvrez ICIMO ? <Link href="/auth/inscription">Créer un compte</Link></span><Link href="/auth/mot-de-passe">Mot de passe oublié ?</Link></div>}{errorMessage && <p className="auth-error" role="alert">{errorMessage}</p>}<button type="submit" className="button button-primary button-block" disabled={busy}>{busy ? "Connexion…" : isRecovery ? "Enregistrer le nouveau mot de passe" : isOtp ? "Continuer" : isSignup ? "Créer mon compte" : isReset ? "Envoyer le lien de réinitialisation" : "Se connecter"} <ArrowRight size={16} /></button></form><div className="auth-security"><LockKeyhole size={15} /><span>{isSupabaseConfigured ? "Authentification via Supabase · annonces et réservations encore en démonstration." : "Simulation locale uniquement · aucune donnée n’est envoyée."}</span></div></div></section>;
 }
 
 export function BookingPage({ slug }: { slug: string }) {

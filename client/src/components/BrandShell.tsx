@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Link, useLocation } from "wouter";
 import { Building2, CalendarDays, Heart, Home, LayoutDashboard, MessageCircle, UserRound, Wallet } from "lucide-react";
 import { useDemo } from "@/components/DemoStore";
+import { supabase, useSupabaseAuth } from "@/lib/supabase";
 
 type Destination = { label: string; href: string; icon: typeof Home };
 
@@ -24,8 +25,10 @@ function activeFor(location: string, href: string) {
 
 export default function BrandShell({ children }: { children: ReactNode }) {
   const [location, setLocation] = useLocation();
-  const { mode, setMode, favorites, toast, profile } = useDemo();
-  const initials = `${profile.firstName.charAt(0)}${profile.lastName.charAt(0)}`;
+  const { mode, setMode, favorites, toast, profile, notify } = useDemo();
+  const { user } = useSupabaseAuth();
+  const displayName = user ? String(user.user_metadata?.full_name ?? user.user_metadata?.name ?? user.email?.split("@")[0] ?? profile.firstName) : `${profile.firstName} ${profile.lastName.charAt(0)}.`;
+  const initials = user ? displayName.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase() : `${profile.firstName.charAt(0)}${profile.lastName.charAt(0)}`;
   const admin = location.startsWith("/admin");
   const destinations: Destination[] = admin
     ? [
@@ -56,9 +59,22 @@ export default function BrandShell({ children }: { children: ReactNode }) {
     setLocation(next === "owner" ? "/hote" : "/");
   };
 
+  async function handleSignOut() {
+    if (supabase && user) {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        notify(error.message);
+        return;
+      }
+      notify("Session Supabase fermée.");
+    }
+    setMode("client");
+    setLocation("/auth/connexion");
+  }
+
   return (
     <div className={`app-frame ${admin ? "admin-frame" : ""}`}>
-      <div className="demo-strip"><span className="demo-dot" /> Démonstration interactive <span className="demo-strip-note">· aucun paiement ni compte réel</span></div>
+      <div className="demo-strip"><span className="demo-dot" /> Démonstration interactive <span className="demo-strip-note">· annonces et paiements fictifs</span></div>
       <header className="topbar">
         <Link href="/" className="brand-lockup" aria-label="ICIMO, accueil">
           <Mark />
@@ -82,13 +98,13 @@ export default function BrandShell({ children }: { children: ReactNode }) {
         <div className="topbar-actions">
           {!admin && <button className="mode-switch" onClick={changeMode}>{mode === "client" ? "Devenir hôte" : "Mode voyageur"}</button>}
           <details className="account-menu">
-            <summary><span className="avatar avatar-small">{profile.avatar ? <img src={profile.avatar} alt="" /> : initials}</span><span className="account-name">{profile.firstName} {profile.lastName.charAt(0)}.</span></summary>
+            <summary><span className="avatar avatar-small">{profile.avatar ? <img src={profile.avatar} alt="" /> : initials}</span><span className="account-name">{displayName}</span></summary>
             <div className="account-popover">
               <Link href="/profil">Mon profil</Link>
               <Link href="/notifications">Notifications</Link>
               <Link href="/parametres">Paramètres</Link>
               <Link href="/admin">Console de démonstration</Link>
-              <button onClick={() => { setMode("client"); setLocation("/auth/connexion"); }}>Se déconnecter (démo)</button>
+              <button onClick={() => void handleSignOut()}>{user ? "Se déconnecter" : "Connexion"}</button>
             </div>
           </details>
         </div>

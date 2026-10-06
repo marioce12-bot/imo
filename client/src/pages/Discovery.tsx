@@ -73,35 +73,16 @@ export function PropertyCard({ property, horizontal = false, kind }: { property:
 
 export function HomePage() {
   const { properties } = useDemo();
-  const featured = properties.find((property) => property.featured) ?? properties[0];
-  const cards = properties.slice(0, 4);
   return (
-    <>
-      <section className="hero-section">
-        <img className="hero-image" src={featured?.image} alt="Intérieur d’un appartement fictif à Cotonou" />
-        <div className="hero-shade" />
-        <div className="hero-copy"><span className="eyebrow eyebrow-light"><span className="eyebrow-mark" /> L’HOSPITALITÉ, À LA BÉNINOISE</span><h1>Votre prochain<br /><em>chez-vous</em> commence ici.</h1><p>Une nuit, un mois ou un peu plus longtemps.<br className="desktop-only" /> Trouvez l’endroit qui vous ressemble au Bénin.</p><div className="hero-trust"><span><ShieldCheck size={16} /> Prix transparents</span><span>Locations vérifiées</span></div></div>
-        <div className="hero-search"><SearchForm /></div>
-        <span className="hero-image-credit">Logement fictif · visuel de démonstration</span>
-      </section>
-
-      <section className="content-section intro-section">
-        <div className="intro-copy"><span className="eyebrow">ICIMO, AU BÉNIN</span><h2>Bien plus qu’une adresse.</h2><p>Des logements choisis avec soin, des prix lisibles et une équipe qui connaît le pays. À Cotonou, à Grand-Popo ou là où la vie vous mène.</p></div>
-        <div className="intro-stat"><strong>01</strong><span>compte pour explorer<br />ou accueillir</span></div>
-        <div className="intro-stat"><strong>2</strong><span>façons de louer<br />selon votre projet</span></div>
-      </section>
-
-      <section className="content-section listing-section">
-        <div className="section-heading"><div><span className="eyebrow">À DÉCOUVRIR</span><h2>Des lieux qui ont une âme.</h2><p>Quelques adresses de notre sélection au Bénin.</p></div><Link href="/recherche" className="text-link">Voir tous les logements <ArrowRight size={17} /></Link></div>
-        <div className="property-grid">{cards.map((property) => <PropertyCard key={property.slug} property={property} />)}</div>
-      </section>
-
-      <section className="city-section content-section"><div className="section-heading"><div><span className="eyebrow">AU FIL DES VILLES</span><h2>Le Bénin, à votre façon.</h2></div></div><div className="city-pills"><Link href="/recherche?destination=Cotonou">Cotonou <span>Le cœur qui bouge</span></Link><Link href="/recherche?destination=Abomey-Calavi">Abomey-Calavi <span>Un autre rythme</span></Link><Link href="/recherche?destination=Grand-Popo">Grand-Popo <span>Le temps de souffler</span></Link><Link href="/recherche?destination=Porto-Novo">Porto-Novo <span>La capitale côté culture</span></Link></div></section>
-
-      <section className="long-stay-band"><div className="long-band-content"><span className="eyebrow eyebrow-light">S’INSTALLER AUTREMENT</span><h2>Un chez-vous,<br />pour <em>plus longtemps.</em></h2><p>Besoin d’un logement pour le travail, les études ou une nouvelle étape ? Échangez avec le propriétaire et définissez les modalités ensemble.</p><Link href="/recherche?type=long" className="button button-light">Explorer la longue durée <ArrowRight size={17} /></Link></div><div className="long-band-art"><div className="circle-art"><span>ICIMO</span><small>POUR VIVRE<br />À SON RYTHME</small></div><span className="arc-art" /></div></section>
-
-      <section className="host-cta content-section"><div className="host-cta-icon"><Building2 size={25} /></div><div><span className="eyebrow">VOUS AVEZ UN LOGEMENT ?</span><h2>Une adresse à partager ?</h2><p>Présentez votre logement et gérez les demandes au même endroit.</p></div><Link href="/hote" className="button button-outline">Découvrir l’espace hôte <ArrowRight size={17} /></Link></section>
-    </>
+    <section className="discover-home content-section">
+      <div className="discover-home-header">
+        <div><span className="eyebrow"><span className="eyebrow-mark" /> LOGEMENTS AU BÉNIN</span><h1>Découvrir</h1><p>Recherchez une location courte ou longue durée.</p></div>
+        <Link href="/recherche" className="text-link"><SlidersHorizontal size={16} /> Plus de filtres</Link>
+      </div>
+      <SearchForm />
+      <div className="section-heading discover-section-heading"><div><span className="eyebrow">ANNONCES D’EXEMPLE</span><h2>Logements à explorer</h2><p>{properties.length} annonces de démonstration au Bénin.</p></div><Link href="/recherche" className="text-link">Voir tous les logements <ArrowRight size={17} /></Link></div>
+      <div className="property-grid discover-home-grid">{properties.slice(0, 6).map((property) => <PropertyCard key={property.slug} property={property} />)}</div>
+    </section>
   );
 }
 
